@@ -17,12 +17,12 @@ lazy_static! {
 pub fn pull_key() -> Option<Result<char, KeyCode>> {
     let mut keyboard = KEYBOARD.lock();
     let mut port = KEYBOARD_PORT.lock();
-    vga::write_log("pull_key");
+    // vga::write_log("pull_key");
     let code = unsafe {port.read()};
-    vga::write_log("pull_key");
+    // vga::write_log("pull_key");
     if let Ok(Some(key_event)) = keyboard.add_byte(code) {
         if let Some(key) = keyboard.process_keyevent(key_event) {
-            vga::write_log("pull_key");
+            // vga::write_log("pull_key");
             return match key {
                 DecodedKey::Unicode(character) => Some(Ok(character)),
                 DecodedKey::RawKey(key) => Some(Err(key)),

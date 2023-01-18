@@ -10,7 +10,7 @@ pub static PICS: Mutex<ChainedPics> = Mutex::new(unsafe { ChainedPics::new(PIC_L
 #[derive(Debug, Clone, Copy)]
 #[repr(u8)]
 pub enum InterruptIndex {
-    Timer = PIC2_LOCATION,
+    Timer = PIC_LOCATION,
     Keyboard,
 }
 
@@ -23,3 +23,4 @@ impl InterruptIndex {
         usize::from(self.as_u8())
     }
 }
+

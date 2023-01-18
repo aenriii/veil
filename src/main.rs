@@ -37,9 +37,5 @@ pub extern "C" fn _start() -> ! {
     #[cfg(not(test))] {
         kstd::kernel::kernel_main();
     }
-
-    
-    
-    // unsafe { scr.view_at(0xb8000 as *mut u8); } // ASSERTED: scr.view_at works
     loop {}
 }

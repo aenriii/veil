@@ -1,5 +1,7 @@
 use spin::Mutex;
 
+use crate::serial_println;
+
 macro_rules! vga_screen {
     () => {
         ( 0xb8000 as *mut u8 )
@@ -86,6 +88,7 @@ fn ptr_at(x: usize, y: usize) -> *mut u8 {
 fn ptr() -> *mut u8 {
     unsafe { 
         let p = ptr_at(PTR_X, PTR_Y);
+
         p
     }
 }
@@ -95,10 +98,14 @@ fn incr() {
         if PTR_X >= VGA_WIDTH {
             PTR_X = 0;
             PTR_Y += 1;
-            if PTR_Y >= VGA_HEIGHT {
-                shift_up();
-            }
         }
+        if PTR_Y >= VGA_HEIGHT {
+            shift_up();
+            PTR_Y -= 1;
+            PTR_X = 0;
+        }
+        
+        // serial_println!("check y! {}", PTR_Y);
     }
 }
 fn shift_up() {
@@ -143,6 +150,8 @@ pub fn write_char(c: char) {
         return;
     }
     unsafe {
+        serial_println!("write char: {}", c);
+        serial_println!("at: {}, {}", PTR_X, PTR_Y);
         let mut p = ptr();
         *p = c as u8;
         p = p.add(1);
@@ -183,4 +192,28 @@ pub fn set_color(col: u8) {
     unsafe {
         COLOR = col;
     }
+}
+
+pub fn clear_screen() {
+    unsafe {
+        for y in 0..VGA_HEIGHT {
+            for x in 0..VGA_WIDTH {
+                let mut p = ptr_at(x, y);
+                *p = 0;
+                p = p.add(1);
+                *p = COLOR;
+            }
+        }
+    }
+}
+
+pub(crate) fn panic_screen() {
+    unsafe {
+
+        COLOR = color!(red, white);
+        clear_screen();
+        PTR_X = 0;
+        PTR_Y = 0;
+    }
+
 }
