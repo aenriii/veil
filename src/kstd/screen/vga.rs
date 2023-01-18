@@ -96,7 +96,7 @@ fn incr() {
     unsafe {
         PTR_X += 1;
         if PTR_X >= VGA_WIDTH {
-            PTR_X = 0;
+             PTR_X = 0;
             PTR_Y += 1;
         }
         if PTR_Y >= VGA_HEIGHT {
@@ -142,8 +142,9 @@ pub fn write_char(c: char) {
     if c == '\n' {
         unsafe {
             PTR_Y += 1;
+            incr();
             if PTR_Y >= VGA_HEIGHT {
-                shift_up();
+                incr();
             }
             PTR_X = 0; // crlf NOT needed
         }
