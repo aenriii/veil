@@ -1,6 +1,6 @@
 use x86_64::{
     PhysAddr,
-    structures::paging::{Page, PhysFrame, Mapper, Size4KiB, FrameAllocator, OffsetPageTable}
+    structures::paging::{Page, PhysFrame, Mapper, Size4KiB, FrameAllocator, OffsetPageTable, PageSize}
 };
 
 pub struct EmptyFrameAllocator;
@@ -43,4 +43,27 @@ unsafe impl GlobalAlloc for Dummy {
     unsafe fn dealloc(&self, _ptr: *mut u8, _layout: Layout) {
         panic!("dealloc should be never called")
     }
+}
+
+pub struct Locked<A> {
+    inner: spin::Mutex<A>,
+}
+
+impl<A> Locked<A> {
+    pub const fn new(inner: A) -> Self {
+        Locked {
+            inner: spin::Mutex::new(inner),
+        }
+    }
+
+    pub fn lock(&self) -> spin::MutexGuard<A> {
+        self.inner.lock()
+    }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Size512KiB {}
+
+impl PageSize for Size512KiB {
+    const SIZE: u64 = 512 * 1024;
+    const SIZE_AS_DEBUG_STR: &'static str = "512KiB";
 }

@@ -7,6 +7,7 @@
 #![feature(panic_can_unwind)]
 #![feature(panic_info_message)]
 #![feature(alloc_error_handler)]
+#![feature(inherent_associated_types)]
 
 use bootloader::BootInfo;
 use kstd::screen::vga;
@@ -16,6 +17,7 @@ pub mod test;
 
 pub use kstd::*;
 
+#[macro_use]
 extern crate alloc;
 
 #[panic_handler]

@@ -250,3 +250,9 @@ pub fn backspace() {
         *p = COLOR;
     }
 }
+
+pub fn goto_line_start() {
+    unsafe {
+        PTR_X = 0;
+    }
+}

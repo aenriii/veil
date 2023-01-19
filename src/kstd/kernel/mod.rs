@@ -23,7 +23,8 @@ pub fn kernel_main(boot_info: &'static BootInfo) {
     vga::write_log("OK!");
     vga::write_log("Moving to pseudoshell...");
     unsafe { USE_STDIN_BY_SHELL = true; }
-
+    vga::write_log("STDIN set to route to shell, moving execution...");
+    shell::exec();
     
     loop {
         x86_64::instructions::hlt();

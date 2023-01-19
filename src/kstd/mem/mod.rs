@@ -1,18 +1,23 @@
 use bootloader::BootInfo;
 use x86_64::{
-    structures::paging::{OffsetPageTable, PageTable, Translate},
+    structures::paging::{OffsetPageTable, PageTable, Translate, Page, Size2MiB, Size4KiB},
     VirtAddr,
 };
 
 use actual::BootInfoFrameAllocator;
 
+use self::pseudo::Size512KiB;
+
 pub mod pseudo;
 pub mod actual;
 pub mod alloc;
 pub mod heap;
+
+pub mod bump_alloc;
+
 pub(self) static mut BOOT_INFO: Option<&'static BootInfo> = None;
 pub(self) static mut PAGE_TABLE: Option<OffsetPageTable> = None;
-pub(self) static mut FRAME_ALLOCATOR: Option<BootInfoFrameAllocator> = None; 
+pub(self) static mut FRAME_ALLOCATOR: Option<BootInfoFrameAllocator<Size4KiB>> = None; 
 pub fn init(boot_info: &'static BootInfo) {
     unsafe {
         BOOT_INFO = Some(boot_info);
@@ -39,7 +44,7 @@ pub fn init(boot_info: &'static BootInfo) {
     unsafe { heap::init(PAGE_TABLE.as_mut().unwrap(), FRAME_ALLOCATOR.as_mut().unwrap()) }.expect("heap initialization failed");
     vga::write_log("[mem::init] heap::init was a success!");
 
-    #[cfg(feature = "mem_test")] if false {
+    #[cfg(feature = "mem_test")] {
         use crate::println;
         {
             let addresses = [
@@ -67,7 +72,7 @@ pub fn init(boot_info: &'static BootInfo) {
 
             // write the string `New!` to the screen through the new mapping
             let page_ptr: *mut u64 = page.start_address().as_mut_ptr();
-            unsafe { page_ptr.offset(400).write_volatile(0x_f021_f077_f065_f04e) };
+            // unsafe { page_ptr.offset(400).write_volatile(0x_f021_f077_f065_f04e) };
         };
     }
 }
