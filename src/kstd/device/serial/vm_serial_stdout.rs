@@ -10,14 +10,16 @@ lazy_static! {
         Mutex::new(serial_p)
     };
 }
+#[allow(dead_code, unused_variables, unused_imports)] // this is a hack because cargo check often thinks serial_debug will always be false
 pub fn serial_print(args: core::fmt::Arguments) {
     use core::fmt::Write;
+    #[cfg(feature = "serial_debug")]
     SERIAL_STDOUT.lock().write_fmt(args).expect("SERIAL PRINT FAILED!")
 }
 #[macro_export]
 macro_rules! serial_print {
     ($($arg:tt)*) => {
-        $crate::kstd::device::serial::serial_print(format_args!($($arg)*));
+        $crate::device::serial::serial_print(format_args!($($arg)*))
     };
 }
 

@@ -1,46 +1,31 @@
-use crate::println;
+use crate::{mem, screen::vga};
+use bootloader::BootInfo;
 
-use super::screen::vga;
 mod idt;
 mod gdt;
-
+pub(self) mod shell;
 pub(self) mod interrupts;
 pub(self) use gdt::*;
 
-macro_rules! hlt {
-    () => {
-        loop {
-            x86_64::instructions::hlt();
-        }
-    };
-}
+pub static mut USE_STDIN_BY_SHELL: bool = false;
 
-pub fn kernel_main() {
+pub fn kernel_main(boot_info: &'static BootInfo) {
+    vga::init();
+
     vga::write_line("Welcome to Veil v0.0.0!");
 
-    gdt::gdt_init();
-    idt::init_idt();
-    vga::write_log("Core descriptor tables installed");
+    gdt::init();
+    idt::init();
+    vga::write_log("IDT/ISR/GDT initialized");
 
+    vga::write_log("Initializing various memory structures...");
+    mem::init(boot_info);
+    vga::write_log("OK!");
+    vga::write_log("Moving to pseudoshell...");
+    unsafe { USE_STDIN_BY_SHELL = true; }
 
-    // // test panic screen 
-    // {
-    //     x86_64::instructions::interrupts::disable();
-        
-    //     vga::panic_screen();
-    // vga::write_line("");
-    // vga::write_line("");
-    // vga::write_line("");
-    // println!("EXCEPTION! DOUBLE FAULT (CODE: {})", 0101);
-    // vga::write_line("");
-    // vga::write_line("Your computer has encountered a fatal error and will restart in a moment");
-    // vga::write_line("");
-    // vga::write_line("");
-    // vga::write_line("REGISTERS: NOT IMPLEMENTED");
-    // vga::write_line("");
-    // }
-    // hlt!()
+    
     loop {
-        // x86_64::instructions::hlt();
+        x86_64::instructions::hlt();
     }
 }

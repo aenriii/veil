@@ -35,7 +35,7 @@ struct Selectors {
     tss_selector: SegmentSelector,
 }
 
-pub fn gdt_init() {
+pub fn init() {
     use x86_64::instructions::tables::load_tss;
     use x86_64::instructions::segmentation::{CS, Segment};
     

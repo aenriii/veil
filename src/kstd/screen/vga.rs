@@ -1,7 +1,5 @@
 use spin::Mutex;
-
-use crate::serial_println;
-
+use x86_64::instructions::port::Port;
 macro_rules! vga_screen {
     () => {
         ( 0xb8000 as *mut u8 )
@@ -79,6 +77,16 @@ static WRITE_STRING: Mutex<bool> = Mutex::new(false);
 const VGA_WIDTH: usize = 80;
 const VGA_HEIGHT: usize = 25;
 
+pub fn init() {
+    unsafe {
+        // disable blinking cursor
+        Port::new(0x3D4).write(0x0A as u8);
+        Port::new(0x3D5).write(0x20 as u8);
+        // clear screen
+        clear_screen();
+
+    }
+}
 
 fn ptr_at(x: usize, y: usize) -> *mut u8 {
     unsafe {
@@ -150,9 +158,14 @@ pub fn write_char(c: char) {
         }
         return;
     }
+    if c == '\x08' {
+        // serial_println!("backspace");
+        backspace();
+        return;
+    }
     unsafe {
-        serial_println!("write char: {}", c);
-        serial_println!("at: {}, {}", PTR_X, PTR_Y);
+        // serial_println!("write char: {}", c);
+        // serial_println!("at: {}, {}", PTR_X, PTR_Y);
         let mut p = ptr();
         *p = c as u8;
         p = p.add(1);
@@ -189,9 +202,11 @@ pub fn write_line(s: &str) {
     write_char('\n');
 }
 
-pub fn set_color(col: u8) {
+pub fn set_color(col: u8) -> u8 {
     unsafe {
+        let old = COLOR;
         COLOR = col;
+        old
     }
 }
 
@@ -210,11 +225,28 @@ pub fn clear_screen() {
 
 pub(crate) fn panic_screen() {
     unsafe {
-
         COLOR = color!(red, white);
         clear_screen();
         PTR_X = 0;
         PTR_Y = 0;
     }
 
+}
+
+pub fn backspace() {
+    unsafe {
+        if PTR_X == 0 {
+            if PTR_Y == 0 {
+                return;
+            }
+            PTR_Y -= 1;
+            PTR_X = VGA_WIDTH - 1;
+        } else {
+            PTR_X -= 1;
+        }
+        let mut p = ptr();
+        *p = 0;
+        p = p.add(1);
+        *p = COLOR;
+    }
 }

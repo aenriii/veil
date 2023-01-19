@@ -9,7 +9,7 @@ macro_rules! print {
     ($($arg:tt)*) => (
         {
         use core::fmt::Write;
-        match $crate::kstd::fmt::WRITER.lock().write_fmt(format_args!($($arg)*)) {
+        match $crate::fmt::WRITER.lock().write_fmt(format_args!($($arg)*)) {
             Ok(_) => {},
             Err(err) => {panic!("PRINT FAILED {}", err)}
         }

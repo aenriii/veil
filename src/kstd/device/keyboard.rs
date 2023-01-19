@@ -3,8 +3,6 @@ use pc_keyboard::{Keyboard, layouts, ScancodeSet1, HandleControl, DecodedKey, Ke
 use spin::Mutex;
 use x86_64::instructions::port::Port;
 
-use crate::kstd::screen::vga;
-
 lazy_static! {
     static ref KEYBOARD: Mutex<Keyboard<layouts::Us104Key, ScancodeSet1>> =
             Mutex::new(Keyboard::<layouts::Us104Key, ScancodeSet1>::new(
