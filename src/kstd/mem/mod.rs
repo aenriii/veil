@@ -1,12 +1,11 @@
 use bootloader::BootInfo;
 use x86_64::{
-    structures::paging::{OffsetPageTable, PageTable, Translate, Page, Size2MiB, Size4KiB},
+    structures::paging::{OffsetPageTable, PageTable, Translate, Size4KiB},
     VirtAddr,
 };
 
 use actual::BootInfoFrameAllocator;
 
-use self::pseudo::Size512KiB;
 
 pub mod pseudo;
 pub mod actual;

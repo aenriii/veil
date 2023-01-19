@@ -1,6 +1,6 @@
 use alloc::vec::{Vec};
 
-use crate::{device::{keyboard::pull_key, serial}, screen::vga, serial_println, println};
+use crate::{device::{keyboard::pull_key}, screen::vga, serial_println};
 
 
 static mut STDIN: Vec<&[u8]> = Vec::new(); // holds lines of input
@@ -98,12 +98,12 @@ pub fn exec() {
                 serial_println!("not implemented, command: {:?}", args[0]);
             }
         }
-        flush_STDs();
+        flush_stds();
 
     }
 }
 
-fn flush_STDs() {
+fn flush_stds() {
     // flush STDOUT
     for c in unsafe { STDOUT.drain(..) } {
         vga::write_char(c as char);

@@ -1,6 +1,4 @@
 
-use linked_list_allocator::LockedHeap;
-use spin::Mutex;
 
 use super::{bump_alloc::BumpAllocator, pseudo::Locked};
 

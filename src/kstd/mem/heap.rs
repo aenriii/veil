@@ -1,6 +1,6 @@
 use crate::{print, println};
 
-use x86_64::{structures::paging::{Mapper, Size4KiB, FrameAllocator, mapper::MapToError, Page, PageTableFlags, page, PageSize}, VirtAddr};
+use x86_64::{structures::paging::{Mapper, Size4KiB, FrameAllocator, mapper::MapToError, Page, PageTableFlags}, VirtAddr};
 
 use crate::{serial_println, screen::vga};
 

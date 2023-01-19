@@ -1,7 +1,6 @@
 use bootloader::bootinfo::{MemoryMap, MemoryRegionType};
-use x86_64::{structures::paging::{PhysFrame, FrameAllocator, Size4KiB, PageSize, OffsetPageTable, Mapper}, PhysAddr};
+use x86_64::{structures::paging::{PhysFrame, FrameAllocator, PageSize}, PhysAddr};
 
-use super::pseudo::Size512KiB;
 
 
 
@@ -11,7 +10,6 @@ pub struct BootInfoFrameAllocator<Size: PageSize> {
     phantom: core::marker::PhantomData<Size>,
 }
 impl <Size : PageSize> BootInfoFrameAllocator<Size> {
-    type Size = Size;
     pub unsafe fn init(memory_map: &'static MemoryMap) -> Self {
         BootInfoFrameAllocator {
             memory_map,
