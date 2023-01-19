@@ -106,6 +106,9 @@ pub fn exec() -> Next {
                     STDOUT.extend("help - show this message\n".chars());
                     STDOUT.extend("echo - echo the arguments\n".chars());
                     STDOUT.extend("clear - clear the screen\n".chars());
+                    STDOUT.extend("graphics - show graphics commands\n".chars());
+                    STDOUT.extend("version - show the version\n".chars());
+                    STDOUT.extend("quit - quit the shell\n".chars());
 
 
                 }
@@ -116,9 +119,10 @@ pub fn exec() -> Next {
             // graphics
             &['g','r','a','p','h','i','c','s'] => {
                 match args.get(1).unwrap_or(&Vec::new()).iter().collect::<String>().as_str() {
-                    "vga" => {
+                    "vga" => unsafe {
                         // load the VGA module
-                        return Next::GraphicsVGA;
+                        STDOUT.extend("Soon(tm)\n".chars());
+                        // return Next::GraphicsVGA;
                     }
                     _ => {
                         unsafe {
@@ -126,6 +130,12 @@ pub fn exec() -> Next {
                             STDOUT.extend("graphics vga - load VGA module and start drawing to screen\n".chars());
                         }
                     }
+                }
+            }
+            // version
+            &['v','e','r','s','i','o','n'] => {
+                unsafe {
+                    STDOUT.extend("VeilOS 0.0.1\n".chars());
                 }
             }
             _ => {
