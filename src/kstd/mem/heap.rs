@@ -2,10 +2,10 @@ use crate::{print, println};
 
 use x86_64::{structures::paging::{Mapper, Size4KiB, FrameAllocator, mapper::MapToError, Page, PageTableFlags}, VirtAddr};
 
-use crate::{serial_println, screen::vga};
+use crate::{serial_println, screen::vga_text_buffer};
 
 pub const HEAP_START: usize = 0x_4444_4444_0000;
-pub const HEAP_SIZE: usize = 10 * 1024 * 1024; // 10 Mb
+pub const HEAP_SIZE: usize = 2 * 1024 * 1024; // 2 Mb
 
 
 pub fn init(
@@ -34,7 +34,7 @@ pub fn init(
             mapper.map_to(page, frame, flags, frame_allocator)?.flush()
         };
         count_pages_mapped += 1;
-        vga::goto_line_start();
+        vga_text_buffer::goto_line_start();
         print!("[heap::init] Mapping pages: {}/{}", count_pages_mapped, count_pages);
     }
     println!();

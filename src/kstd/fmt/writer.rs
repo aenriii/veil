@@ -1,6 +1,6 @@
 use spin::Mutex;
 
-use crate::screen::{IS_VGA_MODE, vga};
+use crate::screen::{IS_VGA_MODE, vga_text_buffer};
 
 
 pub static WRITER: Mutex<WriterImpl> = Mutex::new(WriterImpl { is_log: false, is_err: false });   
@@ -11,7 +11,7 @@ pub struct WriterImpl {
 impl WriterImpl {
     pub fn write_byte(&mut self, byte: u8) {
         unsafe {if IS_VGA_MODE {
-            vga::write_char(match byte {
+            vga_text_buffer::write_char(match byte {
                 0x20..=0x7e | b'\n' => byte as char,
                 _ => 0xfe as char, // ASCII '■'
             });
@@ -32,12 +32,12 @@ impl WriterImpl {
     }
     pub fn log(&mut self, string: &str) {
         unsafe {if IS_VGA_MODE {
-            vga::write_log(string);
+            vga_text_buffer::write_log(string);
         }}
     }
     pub fn err(&mut self, string: &str) {
         unsafe {if IS_VGA_MODE {
-            vga::write_error(string);
+            vga_text_buffer::write_error(string);
         }}
     }
     pub fn toggle_log(&mut self, to: bool) {

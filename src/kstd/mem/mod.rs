@@ -38,10 +38,10 @@ pub fn init(boot_info: &'static BootInfo) {
         ));
         FRAME_ALLOCATOR = Some(BootInfoFrameAllocator::init(&boot_info.memory_map));
     }
-    use crate::screen::vga;
-    vga::write_log("[mem::init] calling heap::init...");
+    use crate::screen::vga_text_buffer;
+    vga_text_buffer::write_log("[mem::init] calling heap::init...");
     unsafe { heap::init(PAGE_TABLE.as_mut().unwrap(), FRAME_ALLOCATOR.as_mut().unwrap()) }.expect("heap initialization failed");
-    vga::write_log("[mem::init] heap::init was a success!");
+    vga_text_buffer::write_log("[mem::init] heap::init was a success!");
 
     #[cfg(feature = "mem_test")] {
         use crate::println;
@@ -60,11 +60,11 @@ pub fn init(boot_info: &'static BootInfo) {
             for &address in &addresses {
                 let virt = VirtAddr::new(address);
                 let phys = translate_addr(virt);
-                println!("[mem::init] {:?} -> {:?}", virt, phys);
+                // println!("[mem::init] {:?} -> {:?}", virt, phys);
             }
         };
          {
-            let page = Page::containing_address(VirtAddr::new(0));
+            let page = x86_64::structures::paging::Page::containing_address(VirtAddr::new(0));
             let mut mapper = unsafe { PAGE_TABLE.as_mut().unwrap() };
             let mut frame_allocator = pseudo::EmptyFrameAllocator;
             pseudo::create_example_mapping(page, &mut mapper, &mut frame_allocator);

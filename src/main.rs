@@ -9,7 +9,7 @@
 #![feature(alloc_error_handler)]
 
 use bootloader::BootInfo;
-use kstd::screen::vga;
+use kstd::screen::vga_text_buffer;
 
 mod kstd;
 pub mod test;
@@ -20,7 +20,7 @@ extern crate alloc;
 
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
-    vga::set_color(color!(black, red));
+    vga_text_buffer::set_color(color!(black, red));
     println!("PANIC!");
     if let Some(message) = info.message() {
         println!("Message: {}", message);

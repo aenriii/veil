@@ -1,7 +1,7 @@
 use super::{interrupts::PICS, shell, USE_STDIN_BY_SHELL};
 use crate::{
-    device::keyboard::pull_key, kernel::interrupts::InterruptIndex, screen::vga,
-    screen::vga::backspace, *,
+    device::keyboard::pull_key, kernel::interrupts::InterruptIndex, screen::vga_text_buffer,
+    screen::vga_text_buffer::backspace, *,
 };
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame, PageFaultErrorCode};
 
@@ -14,7 +14,7 @@ pub fn init() {
         IDT.breakpoint.set_handler_fn(breakpoint_handler);
         IDT.double_fault
             .set_handler_fn(double_fault_handler)
-            .set_stack_index(super::DOUBLE_FAULT_IST_INDEX);
+            .set_stack_index(super::gdt::DOUBLE_FAULT_IST_INDEX);
         IDT.page_fault.set_handler_fn(page_fault_handler);
         IDT.general_protection_fault
             .set_handler_fn(general_protection_fault_handler);
@@ -36,17 +36,17 @@ extern "x86-interrupt" fn double_fault_handler(
     _stack_frame: InterruptStackFrame,
     _error_code: u64,
 ) -> ! {
-    vga::panic_screen();
-    vga::write_line("");
-    vga::write_line("");
-    vga::write_line("");
+    vga_text_buffer::panic_screen();
+    vga_text_buffer::write_line("");
+    vga_text_buffer::write_line("");
+    vga_text_buffer::write_line("");
     println!("  EXCEPTION! DOUBLE FAULT (CODE: {})", _error_code);
-    vga::write_line("");
-    vga::write_line("Your computer has encountered a fatal error and will restart in a moment");
-    vga::write_line("");
-    vga::write_line("");
-    vga::write_line("REGISTERS: NOT IMPLEMENTED");
-    vga::write_line("");
+    vga_text_buffer::write_line("");
+    vga_text_buffer::write_line("Your computer has encountered a fatal error and will restart in a moment");
+    vga_text_buffer::write_line("");
+    vga_text_buffer::write_line("");
+    vga_text_buffer::write_line("REGISTERS: NOT IMPLEMENTED");
+    vga_text_buffer::write_line("");
 
     loop {}
     // panic!("EXCEPTION: DOUBLE FAULT ({}) \n{:#?}", _error_code, _stack_frame);

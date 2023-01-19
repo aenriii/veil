@@ -220,6 +220,8 @@ pub fn clear_screen() {
                 *p = COLOR;
             }
         }
+        PTR_X = 0;
+        PTR_Y = 0;
     }
 }
 
