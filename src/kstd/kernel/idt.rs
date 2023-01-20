@@ -28,47 +28,7 @@ pub fn init() {
     }
 }
 
-extern "x86-interrupt" fn breakpoint_handler(stack_frame: InterruptStackFrame) {
-    //
-    println!("EXCEPTION: BREAKPOINT\n{:#?}", stack_frame);
-}
-extern "x86-interrupt" fn double_fault_handler(
-    _stack_frame: InterruptStackFrame,
-    _error_code: u64,
-) -> ! {
-    vga_text_buffer::panic_screen();
-    vga_text_buffer::write_line("");
-    vga_text_buffer::write_line("");
-    vga_text_buffer::write_line("");
-    println!("  EXCEPTION! DOUBLE FAULT (CODE: {})", _error_code);
-    vga_text_buffer::write_line("");
-    vga_text_buffer::write_line("Your computer has encountered a fatal error and will restart in a moment");
-    vga_text_buffer::write_line("");
-    vga_text_buffer::write_line("");
-    vga_text_buffer::write_line("REGISTERS: NOT IMPLEMENTED");
-    vga_text_buffer::write_line("");
 
-    loop {}
-    // panic!("EXCEPTION: DOUBLE FAULT ({}) \n{:#?}", _error_code, _stack_frame);
-}
-extern "x86-interrupt" fn page_fault_handler(
-    _stack_frame: InterruptStackFrame,
-    _error_code: PageFaultErrorCode,
-) {
-    panic!(
-        "EXCEPTION: PAGE FAULT\n{:#?}\n{:#?}",
-        _stack_frame, _error_code
-    );
-}
-extern "x86-interrupt" fn general_protection_fault_handler(
-    _stack_frame: InterruptStackFrame,
-    _error_code: u64,
-) {
-    panic!(
-        "EXCEPTION: GENERAL PROTECTION FAULT\n{:#?}\n{:#?}",
-        _stack_frame, _error_code
-    );
-}
 // Interrupts
 
 extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {

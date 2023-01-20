@@ -1,21 +1,26 @@
 use bootloader::bootinfo::{MemoryMap, MemoryRegionType};
 use x86_64::{structures::paging::{PhysFrame, FrameAllocator, PageSize}, PhysAddr};
 
-
-
+lazy_static::lazy_static! {
+    static ref BLANK: MemoryMap = MemoryMap::new();
+}
 
 pub struct BootInfoFrameAllocator<Size: PageSize> {
     memory_map: &'static MemoryMap,
     next: usize,
     phantom: core::marker::PhantomData<Size>,
 }
+
 impl <Size : PageSize> BootInfoFrameAllocator<Size> {
-    pub unsafe fn init(memory_map: &'static MemoryMap) -> Self {
-        BootInfoFrameAllocator {
-            memory_map,
-            next: 0,
-            phantom: core::marker::PhantomData,
-        }
+    pub fn new() -> Self {
+        BootInfoFrameAllocator { 
+            memory_map: &BLANK, 
+            next: 0, 
+            phantom: core::marker::PhantomData
+         }
+    }
+    pub unsafe fn init(&mut self, mm: &'static MemoryMap) {
+        self.memory_map = mm;
     }
     fn usable_frames(&self) -> impl Iterator<Item = PhysFrame<Size>> {
         let regions = self.memory_map.iter();

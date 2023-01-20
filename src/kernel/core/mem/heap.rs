@@ -1,17 +1,15 @@
-use crate::{print, println};
+use core::ops::DerefMut;
 
-use x86_64::{structures::paging::{Mapper, Size4KiB, FrameAllocator, mapper::MapToError, Page, PageTableFlags}, VirtAddr};
+use lazy_static::__Deref;
+use x86_64::{structures::paging::{Mapper, Size4KiB, mapper::MapToError, Page, PageTableFlags,FrameAllocator as FA_tr}, VirtAddr};
 
-use crate::{serial_println, screen::vga_text_buffer};
-
-pub const HEAP_START: usize = 0x_4444_4444_0000;
-pub const HEAP_SIZE: usize = 4 * 1024 * 1024; // 2 Mb
+use crate::{kernel::{internal::{HEAP_START, HEAP_SIZE}, core::mem::{Allocator, FrameAllocator, PageTable}}, serial_println, print, println, lib::modules::vga_text_mode::VgaTextWriter};
 
 
 pub fn init(
-    mapper: &mut impl Mapper<Size4KiB>,
-    frame_allocator: &mut impl FrameAllocator<Size4KiB>,
 ) -> Result<(), MapToError<Size4KiB>> {
+    let mut mapper = PageTable.lock();
+    let mut frame_allocator = FrameAllocator.lock();
     let page_range = {
         let heap_start = VirtAddr::new(HEAP_START as u64);
         let heap_end = heap_start + HEAP_SIZE - 1u64;
@@ -24,20 +22,23 @@ pub fn init(
     serial_println!("[heap::init] mapping pages (count: {})...", page_range.count());
     let mut count_pages_mapped = 0;
     let count_pages = page_range.count();
-    print!("[heap::init] Mapping pages: {}/{}", count_pages_mapped, count_pages);
+    // print!("[heap::init] Mapping pages: {}/{}", count_pages_mapped, count_pages);
     for page in page_range {
         let frame = frame_allocator
             .allocate_frame()
             .ok_or(MapToError::FrameAllocationFailed)?;
         let flags = PageTableFlags::PRESENT | PageTableFlags::WRITABLE;
         unsafe {
-            mapper.map_to(page, frame, flags, frame_allocator)?.flush()
+            // serial_println!("mapper IN");
+            mapper.as_mut().unwrap().map_to(page, frame, flags, frame_allocator.deref_mut())?.flush();
+            // serial_println!("mapper OUT");
         };
         count_pages_mapped += 1;
-        vga_text_buffer::goto_line_start();
-        print!("[heap::init] Mapping pages: {}/{}", count_pages_mapped, count_pages);
+        #[cfg(feature = "vga_text_mode")]
+        VgaTextWriter.lock().restart_line();
+        // print!("[heap::init] Mapping pages: {}/{}", count_pages_mapped, count_pages);
     }
-    println!();
+    // println!();
     serial_println!("[heap::init] pages mapped");
 
     unsafe {

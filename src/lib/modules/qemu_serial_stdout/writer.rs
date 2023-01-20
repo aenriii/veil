@@ -3,7 +3,7 @@ use spin::Mutex;
 use super::port::QEMU_SERIAL_STDOUT;
 
 pub static SerialWriter: Mutex<SerialWriterT> = Mutex::new(SerialWriterT {});
-struct SerialWriterT {
+pub struct SerialWriterT {
 
 }
 impl SerialWriterT {

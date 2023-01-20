@@ -1,3 +1,5 @@
+use super::PIC_LOCATION;
+
 
 #[derive(Debug, Clone, Copy)]
 #[repr(u8)]

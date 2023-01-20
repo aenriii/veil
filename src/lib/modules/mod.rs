@@ -8,3 +8,6 @@ pub mod qemu_serial_stdout; // if we aren't adding STDOUT as a serial port in qe
 
 #[cfg(feature = "allocator")]
 pub mod string_writer; // we need an allocator to use string types
+
+#[cfg(feature = "serials")]
+pub mod serials;

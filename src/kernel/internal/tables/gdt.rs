@@ -11,6 +11,8 @@ use x86_64::{
     VirtAddr
 };
 
+use crate::kernel::internal::DOUBLE_FAULT_IST_INDEX;
+
 
 lazy_static! {
     static ref TSS: TaskStateSegment = {
