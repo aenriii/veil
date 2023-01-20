@@ -4,6 +4,16 @@ version = "0.1.0"
 edition = "2018"
 
 [features]
+
+default = ["qemu_features", "allocator"]
+
+qemu_features = ["serial_stdout", "qemu_powerdown"]
+serial_stdout = []
+qemu_powerdown = []
+
+allocator = ["bump_allocator"]
+bump_allocator = []
+
 debug = ["serial_debug", "mem_test"]
 serial_debug = []
 mem_test = []

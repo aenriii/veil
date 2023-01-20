@@ -1,7 +1,7 @@
 pub(super) mod gdt;
 pub(super) mod idt;
 
-pub fun init() {
+pub fn init() {
     gdt::init();
     idt::init();
 }

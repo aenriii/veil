@@ -1,13 +1,11 @@
+use crate::{lib::modules, log_text_mode, kernel::internal::tables};
+
 
 
 pub fn main(boot_info: &'static BootInfo) {
-    vga_text_buffer::init();
-
-    vga_text_buffer::write_line("Welcome to Veil v0.0.0!");
-
-    gdt::init();
-    idt::init();
-    vga_text_buffer::write_log("IDT/ISR/GDT initialized");
+    modules::vga_text_mode::init();
+    tables::init();
+    log_text_mode!("Welcome to Veil!");
 
     vga_text_buffer::write_log("Eating ram...");
     mem::init(boot_info);

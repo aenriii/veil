@@ -1,9 +1,10 @@
+use crate::{error_text_mode};
+
 #[panic_handler]
 pub fn panic(info: &core::panic::PanicInfo) -> ! {
-    vga_text_buffer::set_color(color!(black, red));
-    println!("PANIC!");
+    error_text_mode!("PANIC!");
     if let Some(message) = info.message() {
-        println!("Message: {}", message);
+        error_text_mode!("Message: {}", message);
     }
     loop {}
 }

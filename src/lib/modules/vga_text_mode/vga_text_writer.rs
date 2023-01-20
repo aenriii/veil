@@ -15,7 +15,27 @@ struct VgaTextWriterT {
     color_code: u8,
 }
 impl VgaTextWriterT {
-    pub fn clear_screen(color: u8) {
+    fn bound(&mut self) {
+        if self.pos_x >= VGA_WIDTH {
+            self.pos_x = 0;
+            self.pos_y += 1;
+        }
+        if self.pos_y >= VGA_HEIGHT {
+            self.shift_up();
+            self.pos_y = VGA_HEIGHT - 1;
+        }
+    }
+    fn shift_up(&mut self) {
+        for y in 1..VGA_HEIGHT {
+            for x in 0..VGA_WIDTH {
+                unsafe {
+                    *VGA_BUFFER.offset((y * VGA_WIDTH + x) as isize * 2) = *VGA_BUFFER.offset(((y - 1) * VGA_WIDTH + x) as isize * 2);
+                    *VGA_BUFFER.offset((y * VGA_WIDTH + x) as isize * 2 + 1) = *VGA_BUFFER.offset(((y - 1) * VGA_WIDTH + x) as isize * 2 + 1);
+                }
+            }
+        }
+    }
+    pub fn clear_screen(&mut self, color: u8) {
         // replace all characters with 0 and the color code with the given color
         for ptr in 0..(VGA_WIDTH * VGA_HEIGHT) {
             unsafe {
@@ -31,6 +51,53 @@ impl VgaTextWriterT {
     }
     pub fn write_char(&mut self, c: char) {
         match c {
-            '
-    
+            '\r' => self.pos_x = 0,
+            '\n' => {
+                self.pos_x = 0;
+                self.pos_y += 1;
+            }
+            c => {
+                unsafe {
+                    *VGA_BUFFER.offset((self.pos_y * VGA_WIDTH + self.pos_x) as isize * 2) = c as u8;
+                    *VGA_BUFFER.offset((self.pos_y * VGA_WIDTH + self.pos_x) as isize * 2 + 1) = self.color_code;
+                }
+                self.pos_x += 1;
+            }
+        }
+        self.bound();
+    }
+    pub fn set_color(&mut self, color: u8) {
+        self.color_code = color;
+    }
+    pub fn get_color(&self) -> u8 {
+        self.color_code
+    }
+    pub fn set_pos(&mut self, x: usize, y: usize) {
+        self.pos_x = x;
+        self.pos_y = y;
+        self.bound();
+    }
+    pub fn get_pos(&self) -> (usize, usize) {
+        (self.pos_x, self.pos_y)
+    }
+
+}
+
+pub enum Color {
+    Black = 0x00,
+    Blue = 0x01,
+    Green = 0x02,
+    Cyan = 0x03,
+    Red = 0x04,
+    Magenta = 0x05,
+    Brown = 0x06,
+    LightGray = 0x07,
+    DarkGray = 0x08,
+    LightBlue = 0x09,
+    LightGreen = 0x0a,
+    LightCyan = 0x0b,
+    LightRed = 0x0c,
+    LightMagenta = 0x0d,
+    Yellow = 0x0e,
+    White = 0x0f,
 }
