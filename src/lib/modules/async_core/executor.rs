@@ -8,16 +8,15 @@ use crate::std::desync::Executor;
 
 #[cfg(feature = "primitive_async_impl")]
 pub type MainExecutor = super::primitive::PrimitiveExecutor;
-#[cfg(not(feature = "primitive_async_impl"))]
-panic!("No async executor available!");
 
-pub static mut Executor: spin::Lazy<RefCell<Box<dyn Executor>>> = spin::Lazy::new( || RefCell::new(Box::new({
+// if you are reading this i sincerely apologize
+pub static mut Executor: spin::Lazy<RefCell<Box<dyn Executor>>> = spin::Lazy::new(|| RefCell::new(Box::new({
     #[cfg(feature = "primitive_async_impl")]
     {
         super::primitive::PrimitiveExecutor::new()
     }
-    #[cfg(not(feature = "primitive_async_impl"))]
+    #[cfg(feature = "stable_async_impl")]
     {
-        panic!("No async executor available!");
+        super::stable::StableExecutor::new()
     }
 })));

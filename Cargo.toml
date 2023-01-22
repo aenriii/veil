@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2018"
 
 [features]
-
 default = ["vm_core", "alloc_core", "device_core", "async_core"]
 
 vm_core = ["qemu_features"]
@@ -22,10 +21,10 @@ async_core = [
     "alloc_core",
 
     # async executor impl
-    "primitive_async_impl",
+    "stable_async_impl",
 ]
 primitive_async_impl = []
-
+stable_async_impl = ["desync_atomics"]
 device_core = [
     "vga_text_mode",
     "serial_devices"
@@ -38,6 +37,8 @@ vga_text_mode = []
 ps2_keyboard = ["ps2_keyboard_sync"]
 ps2_keyboard_sync = []
 ps2_keyboard_async = ["async_core", "alloc_core"] # requires allocator and async executor
+
+desync_atomics = []
 [dependencies]
 x86_64 = "0.14.10"
 uart_16550 = "0.2.0"
