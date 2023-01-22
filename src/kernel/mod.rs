@@ -1,6 +1,6 @@
 mod main;
 
-pub(self) mod core;
+pub(super) mod core;
 pub(self) mod internal;
 pub(self) mod shell;
 pub use main::main;

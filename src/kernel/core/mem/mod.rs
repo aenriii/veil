@@ -10,8 +10,10 @@ use x86_64::{structures::paging::{Size4KiB, OffsetPageTable}, VirtAddr};
 use crate::{kernel::internal::{HEAP_START, HEAP_SIZE, HEAP_SIZE_AS_DEBUG_STR}, log_text_mode, log, prealloc_log_vga};
 
 pub(super) use self::alloc::Allocator;
+#[cfg(feature = "bump_allocator")]
 pub(super) use frame_allocator::BootInfoFrameAllocator;
-
+#[cfg(feature = "mithril_allocator")] // we need this available if we're using the mithril allocator
+pub(crate) use frame_allocator::BootInfoFrameAllocator;
 lazy_static::lazy_static! {
     pub(super) static ref FrameAllocator: Mutex<BootInfoFrameAllocator<Size4KiB>> = Mutex::new(BootInfoFrameAllocator::new());
 }
@@ -35,7 +37,7 @@ pub fn init(bi: &'static BootInfo) {
         {*PageTable.lock() = Some(opt);}
         FrameAllocator.lock().init(&bi.memory_map);
         // prealloc_log_vga!("[mem::init] Allocating {} of HEAP, from {:#} to {:#}", HEAP_SIZE_AS_DEBUG_STR, HEAP_START, HEAP_START + HEAP_SIZE);
-        Allocator.lock().init(HEAP_START, HEAP_SIZE);
+        // Allocator.lock().init(HEAP_START, HEAP_SIZE);
         prealloc_log_vga!("Heaping...");
         match heap::init() {
             Ok(_) => log!("Heap initialized!"),

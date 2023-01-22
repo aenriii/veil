@@ -12,10 +12,10 @@ qemu_features = ["serial_stdout", "qemu_powerdown"]
 serial_stdout = []
 qemu_powerdown = []
 
-alloc_core = ["bump_allocator"]
-bump_allocator = [] # stable allocator
+alloc_core = ["mithril_allocator"]
+bump_allocator = ["_prepage_heap"] # stable allocator
 mithril_allocator = ["async_core"] # experimental async allocator
-
+_prepage_heap = []
 async_core = [
     # requires
     "alloc_core",
@@ -63,6 +63,15 @@ features = ["alloc"]
 version = "0.9.2"
 default-features = false
 features = ["mutex", "lazy", "spin_mutex"]
+
+[dependencies.conquer-once]
+version = "0.2.0"
+default-features = false
+
+[dependencies.futures-util]
+version = "0.3.4"
+default-features = false
+features = ["alloc"]
 
 [package.metadata.bootimage]
 test-args = [
