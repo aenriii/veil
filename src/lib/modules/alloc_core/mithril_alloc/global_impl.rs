@@ -6,7 +6,7 @@ use super::MithrilAllocator;
 
 
 
-unsafe impl GlobalAlloc for Locked<MithrilAllocator<'_>> {
+unsafe impl GlobalAlloc for Locked<MithrilAllocator> {
     unsafe fn alloc(&self, layout: core::alloc::Layout) -> *mut u8 {
         todo!()
     }

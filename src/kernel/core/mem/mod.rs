@@ -14,10 +14,19 @@ pub(super) use self::alloc::Allocator;
 pub(super) use frame_allocator::BootInfoFrameAllocator;
 #[cfg(feature = "mithril_allocator")] // we need this available if we're using the mithril allocator
 pub(crate) use frame_allocator::BootInfoFrameAllocator;
+#[cfg(feature = "bump_allocator")]
 lazy_static::lazy_static! {
     pub(super) static ref FrameAllocator: Mutex<BootInfoFrameAllocator<Size4KiB>> = Mutex::new(BootInfoFrameAllocator::new());
 }
+#[cfg(feature = "mithril_allocator")]
+lazy_static::lazy_static! {
+    pub(crate) static ref FrameAllocator: Mutex<BootInfoFrameAllocator<Size4KiB>> = Mutex::new(BootInfoFrameAllocator::new());
+}
+
+#[cfg(feature = "bump_allocator")]
 pub(super) static PageTable: Mutex<Option<OffsetPageTable>> = Mutex::new(None);
+#[cfg(feature = "mithril_allocator")]
+pub(crate) static PageTable: Mutex<Option<OffsetPageTable>> = Mutex::new(None);
 
 pub fn init(bi: &'static BootInfo) {
     unsafe {

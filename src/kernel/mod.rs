@@ -1,6 +1,6 @@
 mod main;
 
-pub(super) mod core;
+pub(crate) mod core; // a lot of things will need core
 pub(self) mod internal;
 pub(self) mod shell;
 pub use main::main;

@@ -77,7 +77,7 @@ pub fn init() -> Result<(), MapToError<Size4KiB>> {
     #[cfg(not(feature = "_prepage_heap"))] unsafe {
         serial_println!("[heap::init] prepage_heap feature not enabled");
         // assume heap takes in more parameters
-        super::alloc::Allocator.lock().init(HEAP_START, HEAP_SIZE, &mut PageTable.lock(), &mut FrameAllocator.lock());
+        super::alloc::Allocator.lock().init(HEAP_START, HEAP_SIZE);
         Ok(())
     }
 }
