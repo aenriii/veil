@@ -26,14 +26,23 @@ impl VgaTextWriterT {
         }
     }
     fn shift_up(&mut self) {
-        for y in 1..VGA_HEIGHT {
-            for x in 0..VGA_WIDTH {
-                unsafe {
-                    *VGA_BUFFER.offset((y * VGA_WIDTH + x) as isize * 2) = *VGA_BUFFER.offset(((y - 1) * VGA_WIDTH + x) as isize * 2);
-                    *VGA_BUFFER.offset((y * VGA_WIDTH + x) as isize * 2 + 1) = *VGA_BUFFER.offset(((y - 1) * VGA_WIDTH + x) as isize * 2 + 1);
-                }
+        #[cfg(feature = "serial_stdout")]
+        crate::serial_println!("shifting up");
+        for ptr in VGA_HEIGHT..(VGA_WIDTH * VGA_HEIGHT-1) {
+            unsafe {
+                *VGA_BUFFER.offset(ptr as isize * 2) = *VGA_BUFFER.offset((ptr * 2 + VGA_WIDTH * 2) as isize);
+                *VGA_BUFFER.offset(ptr as isize * 2 + 1) = *VGA_BUFFER.offset((ptr * 2 + VGA_WIDTH * 2 + 1) as isize);
             }
         }
+    }
+    pub fn line_up(&mut self) {
+        self.pos_y -= 1;
+        #[allow(unused_comparisons)]
+        if self.pos_y < 0 {
+            self.pos_y = 0;
+        }
+        self.restart_line();
+        self.bound();
     }
     pub fn clear_screen(&mut self, color: u8) {
         // replace all characters with 0 and the color code with the given color
@@ -48,6 +57,12 @@ impl VgaTextWriterT {
     }
     pub fn restart_line(&mut self) {
         self.pos_x = 0;
+        for ptr in 0..VGA_WIDTH {
+            unsafe {
+                *VGA_BUFFER.offset((self.pos_y * VGA_WIDTH + ptr) as isize * 2) = 0;
+                *VGA_BUFFER.offset((self.pos_y * VGA_WIDTH + ptr) as isize * 2 + 1) = self.color_code;
+            }
+        }
         
     }
     pub fn write_string(&mut self, s: &str) {
@@ -71,6 +86,21 @@ impl VgaTextWriterT {
             }
         }
         self.bound();
+    }
+    pub fn backspace(&mut self) {
+        if self.pos_x == 0 {
+            if self.pos_y == 0 {
+                return;
+            }
+            self.pos_y -= 1;
+            self.pos_x = VGA_WIDTH - 1;
+        } else {
+            self.pos_x -= 1;
+        }
+        unsafe {
+            *VGA_BUFFER.offset((self.pos_y * VGA_WIDTH + self.pos_x) as isize * 2) = 0;
+            *VGA_BUFFER.offset((self.pos_y * VGA_WIDTH + self.pos_x) as isize * 2 + 1) = self.color_code;
+        }
     }
     pub fn set_color(&mut self, color: u8) {
         self.color_code = color;

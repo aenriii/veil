@@ -13,7 +13,11 @@ unsafe impl GlobalAlloc for Locked<BumpAllocator> {
         let alloc_start = align_up(bump.next as u64, layout.align() as u64) as usize;
         let alloc_end = match alloc_start.checked_add(layout.size()) {
             Some(end) => end,
-            None => return ptr::null_mut(),
+            None => {
+                #[cfg(feature = "serial_stdout")]
+                crate::serial_println!("BumpAllocator: alloc failed");
+                return ptr::null_mut()
+            },
         };
 
         if alloc_end > bump.heap_end as usize {

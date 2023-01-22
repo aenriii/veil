@@ -3,7 +3,7 @@ use core::ops::DerefMut;
 use lazy_static::__Deref;
 use x86_64::{structures::paging::{Mapper, Size4KiB, mapper::MapToError, Page, PageTableFlags,FrameAllocator as FA_tr}, VirtAddr};
 
-use crate::{kernel::{internal::{HEAP_START, HEAP_SIZE}, core::mem::{Allocator, FrameAllocator, PageTable}}, serial_println, print, println, lib::modules::vga_text_mode::VgaTextWriter};
+use crate::{kernel::{internal::{HEAP_START, HEAP_SIZE}, core::mem::{Allocator, FrameAllocator, PageTable}}, serial_println, print, println};
 
 
 pub fn init(
@@ -34,8 +34,8 @@ pub fn init(
             // serial_println!("mapper OUT");
         };
         count_pages_mapped += 1;
-        #[cfg(feature = "vga_text_mode")]
-        VgaTextWriter.lock().restart_line();
+        // #[cfg(feature = "vga_text_mode")]
+        // VgaTextWriter.lock().restart_line();
         // print!("[heap::init] Mapping pages: {}/{}", count_pages_mapped, count_pages);
     }
     // println!();

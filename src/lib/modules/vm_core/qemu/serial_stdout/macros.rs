@@ -5,7 +5,7 @@ macro_rules! serial_print {
     };
     ($($arg:tt)*) => {
         {
-            use crate::lib::modules::qemu_serial_stdout::SerialWriter;
+            use crate::lib::modules::vm_core::qemu::serial_stdout::SerialWriter;
             use ::core::fmt::Write;
             SerialWriter.lock().write_fmt((format_args!($($arg)*)));
         }

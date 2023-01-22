@@ -1,4 +1,3 @@
-
 mod vga_text_writer;
 mod macros;
 pub use vga_text_writer::VgaTextWriter;
