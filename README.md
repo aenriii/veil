@@ -9,4 +9,6 @@
   </p>
  
 ## How to run
-*[PUT INSTRUCTIONS HERE]
+### This assumes you have qemu-system-x86_64 installed and on your path.
+
+`cargo run`
