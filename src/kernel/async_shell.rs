@@ -78,9 +78,6 @@ pub async fn run() {
                         print!("Available tests:\n");
                         print!("  async: test async core\n");
                     }
-                    fn version() {
-                        print!("VeilOS {}\n", env!("CARGO_PKG_VERSION"));
-                    }
                     if args.len() < 2 {
                         print!("Usage: test <test>\n");
                         help();
@@ -119,4 +116,5 @@ pub async fn run() {
         }
         is_start_of_line = true;
     }
+    print!("You have exited the shell! If this was unintentional, lmao");
 }
