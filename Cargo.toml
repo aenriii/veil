@@ -12,7 +12,7 @@ qemu_features = ["serial_stdout", "qemu_powerdown"]
 serial_stdout = []
 qemu_powerdown = []
 
-alloc_core = ["mithril_allocator"]
+alloc_core = ["bump_allocator"]
 bump_allocator = ["_prepage_heap"] # stable allocator
 mithril_allocator = ["async_core"] # experimental async allocator
 _prepage_heap = []
@@ -34,7 +34,7 @@ serial_devices = [
     "ps2_keyboard",
 ]
 vga_text_mode = []
-ps2_keyboard = ["ps2_keyboard_sync"]
+ps2_keyboard = ["ps2_keyboard_async"]
 ps2_keyboard_sync = []
 ps2_keyboard_async = ["async_core", "alloc_core"] # requires allocator and async executor
 

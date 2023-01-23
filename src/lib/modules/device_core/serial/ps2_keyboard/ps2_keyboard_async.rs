@@ -5,7 +5,7 @@ use futures_util::task::AtomicWaker;
 use crate::println;
 
 static WAKER: AtomicWaker = AtomicWaker::new();
-static SCANCODE_QUEUE: OnceCell<ArrayQueue<u8>> = OnceCell::uninit();
+pub static SCANCODE_QUEUE: OnceCell<ArrayQueue<u8>> = OnceCell::uninit();
 
 pub(crate) fn add_scancode(scancode: u8) {
     if let Ok(queue) = SCANCODE_QUEUE.try_get() {

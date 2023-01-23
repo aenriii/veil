@@ -77,6 +77,7 @@ impl VgaTextWriterT {
                 self.pos_x = 0;
                 self.pos_y += 1;
             }
+            '\x08' => self.backspace(),
             c => {
                 unsafe {
                     *VGA_BUFFER.offset((self.pos_y * VGA_WIDTH + self.pos_x) as isize * 2) = c as u8;

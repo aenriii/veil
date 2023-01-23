@@ -1,6 +1,5 @@
 use bootloader::BootInfo;
 use pc_keyboard::{DecodedKey::*, KeyCode};
-use shell::{PS1, PS1_LEN};
 use x86_64::instructions::hlt;
 
 use crate::{
@@ -10,11 +9,9 @@ use crate::{
             mem,
             std_vecs::{KEYIN, STDIN},
         },
-        internal::tables,
-        shell::{self, UPDATE_LOCK},
-    },
+        internal::tables, async_shell    },
     lib::modules,
-    log, prealloc_log_vga, println, serial_println,
+    log, prealloc_log_vga, println, serial_println, std::desync::Task,
 };
 
 pub fn main(boot_info: &'static BootInfo) -> ! {
@@ -38,7 +35,7 @@ pub fn main(boot_info: &'static BootInfo) -> ! {
 
     #[cfg(feature = "async_core")] unsafe {
         log!("Loading core tasks and starting execution engine...");
-
+        modules::async_core::Executor.borrow_mut().spawn(Task::new(async_shell::run()));
         loop {
             modules::async_core::Executor.borrow_mut().run();
         }
