@@ -57,9 +57,12 @@ impl RegionIter for Locked<Vec<Region>> {
             let mut regions = self.lock();
 
             let (remaining, requested) = region.chunk_aligned(size, align);
-            for r in remaining {
-                regions.push(r);
+            if let Some(remaining) = remaining {
+                for r in {remaining} {
+                    regions.push(({r})); // we can clone here because we aren't losing ownership of the region
+                }
             }
+
             requested.map(|x| x.start_addr().as_u64() as *mut u8)
         } else {
             None

@@ -10,7 +10,7 @@ use crate::{
             std_vecs::{KEYIN, STDIN},
         },
         internal::tables, async_shell    },
-    lib::modules,
+    lib::{modules, veil_std::desync::Executor},
     log, prealloc_log_vga, println, serial_println, std::desync::Task,
 };
 

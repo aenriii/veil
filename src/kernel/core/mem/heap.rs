@@ -10,7 +10,6 @@ use x86_64::{
 
 use crate::{
     kernel::{
-        core::mem::{Allocator, FrameAllocator, PageTable},
         internal::{HEAP_SIZE, HEAP_START},
     },
     print, println, serial_println,
@@ -19,6 +18,7 @@ use crate::{
 pub fn init() -> Result<(), MapToError<Size4KiB>> {
     #[cfg(feature = "_prepage_heap")]
     {
+        use crate::kernel::core::mem::{Allocator, FrameAllocator, PageTable};
         let mut mapper = PageTable.lock();
         let mut frame_allocator = FrameAllocator.lock();
         let page_range = {
@@ -72,12 +72,14 @@ pub fn init() -> Result<(), MapToError<Size4KiB>> {
             serial_println!("Initializing global allocator...");
             super::alloc::Allocator.lock().init(HEAP_START, HEAP_SIZE);
         }
-        Ok(())
+        return Ok(())
     }
-    #[cfg(not(feature = "_prepage_heap"))] unsafe {
+    #[cfg(not(feature = "_prepage_heap"))] #[cfg(not(feature = "dra_allocator"))] unsafe {
         serial_println!("[heap::init] prepage_heap feature not enabled");
         // assume heap takes in more parameters
         super::alloc::Allocator.lock().init(HEAP_START, HEAP_SIZE);
         Ok(())
     }
+
+    Ok(())
 }

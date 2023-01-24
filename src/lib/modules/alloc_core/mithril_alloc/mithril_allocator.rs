@@ -7,7 +7,7 @@ use spin::Mutex;
 use x86_64::{VirtAddr, structures::paging::{OffsetPageTable, Size4KiB, FrameAllocator, Page, PageTableFlags, Mapper}};
 use conquer_once::spin::Lazy;
 
-use crate::{kernel::{core::mem::BootInfoFrameAllocator, self}, std::{util::Locked, desync::{Task}, regions::Region}, modules::{async_core::Executor, alloc_core::libregions::RegionIter}, serial_println};
+use crate::{kernel::{core::mem::BootInfoFrameAllocator, self}, std::{util::Locked, desync::{Task}, regions::Region}, modules::{async_core::Executor, alloc_core::libregions::RegionIter}, serial_println, lib::veil_std::desync::Executor};
 
 
 static ALLOC_WAKER : Lazy<AtomicWaker> = Lazy::new(|| AtomicWaker::new()); // wakes alloc async loop

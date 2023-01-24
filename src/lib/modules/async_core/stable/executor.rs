@@ -1,19 +1,20 @@
 use crate::std::desync::{Executor, Task, TaskId};
 use alloc::{collections::BTreeMap, sync::Arc};
-use core::task::{Waker, Context, Poll};
+use spin::RwLock;
+use core::{task::{Waker, Context, Poll}, cell::{Cell, RefCell, UnsafeCell}};
 use crossbeam_queue::ArrayQueue;
 
 use super::waker::TaskWaker;
 
 pub struct StableExecutor {
-    tasks: BTreeMap<TaskId, Task>,
+    pub tasks: RwLock<BTreeMap<TaskId, Task>>,
     task_queue: Arc<ArrayQueue<TaskId>>,
     waker_cache: BTreeMap<TaskId, Waker>,
 }
 impl StableExecutor {
     pub fn new() -> Self {
         StableExecutor {
-            tasks: BTreeMap::new(),
+            tasks: RwLock::new(BTreeMap::new()),
             task_queue: Arc::new(ArrayQueue::new(100)),
             waker_cache: BTreeMap::new(),
         }
@@ -27,6 +28,7 @@ impl StableExecutor {
         } = self;
 
         while let Ok(task_id) = task_queue.pop() {
+            let mut tasks = tasks.write();
             let task = match tasks.get_mut(&task_id) {
                 Some(task) => task,
                 None => continue, // task no longer exists
@@ -60,7 +62,7 @@ impl StableExecutor {
 impl Executor for StableExecutor {
     fn spawn(&mut self, task: crate::std::desync::Task) {
         let task_id = task.id;
-        if self.tasks.insert(task.id, task).is_some() {
+        if self.tasks.write().insert(task.id, task).is_some() {
             panic!("task with same ID already in tasks");
         }
         self.task_queue.push(task_id).expect("queue full");

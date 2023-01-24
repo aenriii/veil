@@ -22,3 +22,4 @@ impl Task {
     }
 }
 unsafe impl Sync for Task {}
+unsafe impl Send for Task {}

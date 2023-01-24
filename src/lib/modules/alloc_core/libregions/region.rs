@@ -1,5 +1,9 @@
+use core::cell::{Cell, UnsafeCell};
+
 use alloc::{vec, vec::Vec};
 use x86_64::VirtAddr;
+
+use crate::lib::veil_std::no_alloc::BoundedIter;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Region {
@@ -65,18 +69,23 @@ impl Region {
             (first, Some(second))
         }
     }
-    pub fn chunk_aligned(self, size: usize, alignment: usize) -> (Vec<Region>, Option<Region>) {
+    pub fn chunk_aligned(self, size: usize, alignment: usize) -> (Option<BoundedIter<Region, 2>>, Option<Region>) {
         let start = self.start.align_up(alignment as u64);
         let end = start + size as u64;
+        let mut iter = BoundedIter::new();
         if end > self.end {
-            (vec![self], None)
+            iter.push(self);
+            (Some(iter), None)
         } else {
             let first = Region::new(start, end - 1 as u64);
             let second = Region::new(end, self.end);
             if start == self.start {
-                (vec![first], Some(second))
+                iter.push(first);
+                (Some(iter), Some(second))
             } else {
-                (vec![Region::new(self.start, start - 1 as u64), first], Some(second))
+                iter.push(Region::new(self.start, start - 1 as u64));
+                iter.push(first);
+                (Some(iter), Some(second))
             }
         }
     }
