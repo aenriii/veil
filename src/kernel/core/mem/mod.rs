@@ -8,8 +8,11 @@ use spin::Mutex;
 use x86_64::{structures::paging::{Size4KiB, OffsetPageTable}, VirtAddr};
 
 use crate::{kernel::internal::{HEAP_START, HEAP_SIZE, HEAP_SIZE_AS_DEBUG_STR}, log_text_mode, log, prealloc_log_vga};
+#[cfg(feature = "bump_allocator")]
 
 pub(super) use self::alloc::Allocator;
+#[cfg(feature = "mithril_allocator")] // we need this available if we're using the mithril allocator
+pub(crate) use self::alloc::Allocator;
 #[cfg(feature = "bump_allocator")]
 pub(super) use frame_allocator::BootInfoFrameAllocator;
 #[cfg(feature = "mithril_allocator")] // we need this available if we're using the mithril allocator

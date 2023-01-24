@@ -77,6 +77,8 @@ pub async fn run() {
                     fn help() {
                         print!("Available tests:\n");
                         print!("  async: test async core\n");
+                        #[cfg(feature = "mithril_allocator")]
+                        print!("  alloc [bytes]: test new allocator\n");
                     }
                     if args.len() < 2 {
                         print!("Usage: test <test>\n");
@@ -101,6 +103,22 @@ pub async fn run() {
                                 }
                             }
                             async_fn().await
+                        }
+                        #[cfg(feature = "mithril_allocator")]
+                        "alloc" => {
+                            if args.len() < 3 {
+                                print!("Usage: test alloc <bytes>\n");
+                                continue;
+                            }
+                            let bytes = args[2].parse::<usize>().unwrap();
+                            let mut l = core::alloc::Layout::from_size_align(bytes, 8).unwrap();
+                            let mut p = unsafe {alloc::alloc::alloc(
+                                l
+                            )};
+                            print!("Heap allocations! {:?}\n", VirtAddr::new(p as u64));
+                            unsafe {
+                                alloc::alloc::dealloc(p, l);
+                            }
                         }
                         _ => {
                             print!("Unknown test: {}\n", args[1]);

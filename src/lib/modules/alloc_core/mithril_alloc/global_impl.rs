@@ -8,10 +8,10 @@ use super::MithrilAllocator;
 
 unsafe impl GlobalAlloc for Locked<MithrilAllocator> {
     unsafe fn alloc(&self, layout: core::alloc::Layout) -> *mut u8 {
-        todo!()
+        self.lock().malloc(layout)
     }
 
     unsafe fn dealloc(&self, ptr: *mut u8, layout: core::alloc::Layout) {
-        todo!()
+        self.lock().demalloc(ptr, layout)
     }
 }
