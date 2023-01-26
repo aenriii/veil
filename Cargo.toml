@@ -12,14 +12,10 @@ qemu_features = ["serial_stdout", "qemu_powerdown"]
 serial_stdout = []
 qemu_powerdown = []
 
-alloc_core = ["noalloc_allocator"]
-bump_allocator = ["_prepage_heap"] # stable allocator
-mithril_allocator = ["async_core", "libregions"] # experimental async allocator
-dra_allocator = ["libregions"]
-noalloc_allocator = []
-libregions = []
+alloc_core = ["bucket_allocator"]
+bucket_allocator = [] # Stable allocator that does not allocate on the heap
+bump_allocator = [] # Backup allocator that requires the heap to be prepaged.
 
-_prepage_heap = []
 async_core = [
     # requires
     "alloc_core",
