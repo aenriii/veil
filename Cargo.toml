@@ -83,7 +83,9 @@ test-args = [
 ]
 test-success-exit-code = 33
 run-args = [
-    "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio"
+    "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio", 
+    # add drives/ext4.img as a sata drive
+    "-drive", "file=drives/ext4.img,format=raw,if=none,id=drive0",
 ]
 # [build]
 # target = "x86_64-veil.json"

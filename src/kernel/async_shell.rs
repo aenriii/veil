@@ -2,7 +2,7 @@ use alloc::{vec::Vec, string::String};
 use futures_util::{Stream, StreamExt};
 use x86_64::VirtAddr;
 
-use crate::{print, modules::device_core::serial::ps2_keyboard::{ps2_keyboard_async::{SCANCODE_QUEUE, ScancodeStream}, KB}};
+use crate::{print, modules::device_core::serial::ps2_keyboard::{ps2_keyboard_async::{SCANCODE_QUEUE, ScancodeStream}, KB}, kernel::core::bios::{ebda, self}};
 
 const PS1: &str = "you@veil $> ";
 
@@ -29,8 +29,12 @@ pub async fn run() {
                                 break;
                             }
                             '\x08' => {
-                                print!("\x08 \x08");
-                                stdin.last_mut().unwrap().pop();
+                                match stdin.last_mut().unwrap().pop() {
+                                    Some(_) => {
+                                        print!("\x08 \x08");
+                                    }
+                                    _ => {}
+                                }
                             }
                             _ => {
                                 print!("{}", c);
@@ -77,6 +81,7 @@ pub async fn run() {
                     fn help() {
                         print!("Available tests:\n");
                         print!("  async: test async core\n");
+                        print!("  find [item]: find specific type of item\n");
                         #[cfg(feature = "bucket_allocator")]
                         print!("  alloc [bytes]: test new allocator\n");
                     }
@@ -119,6 +124,42 @@ pub async fn run() {
                             unsafe {
                                 alloc::alloc::dealloc(p, l);
                             }
+                        }
+                        "find" => unsafe {
+                            fn help() {
+                                print!("Usage: test find <item>\n");
+                                print!("Available items:\n");
+                                print!("  ebda: find the Extended BIOS Data Area\n");
+                                print!("  acpi/rdsp: find the ACPI Root System Description Pointer\n");
+                                print!("  acpi/rsdt: find the ACPI Root System Description Table\n");
+                            }
+                            if args.len() < 3 {
+                                help();
+                                continue;
+                            }
+                            match args[2] {
+                                "help" | "?"  |
+                                "--help" | "-h" => {
+                                    help();
+                                }
+                                "ebda" => {
+                                    let ebda = ebda::edba_ptr();
+                                    print!("EBDA: {:?}\n", ebda);
+                                }
+                                "acpi/rdsp" => {
+                                    let rdsp = bios::rsdt::find_rsdp();
+                                    print!("RSDP: {:?}\n", rdsp);
+                                }
+                                "acpi/rsdt" => {
+                                    let rsdt = bios::rsdt::find_rsdt();
+                                    print!("RSDT: {:?}\n", rsdt);
+                                }
+                                _ => {
+                                    print!("Unknown item: {}\n", args[2]);
+                                    help();
+                                }
+                            }
+
                         }
                         _ => {
                             print!("Unknown test: {}\n", args[1]);
