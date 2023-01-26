@@ -38,8 +38,8 @@ pub async fn run() {
                             }
                         }
 
-                        #[cfg(feature = "serial_stdout")]
-                        crate::serial_println!("cmd: {}", stdin.last().unwrap());
+                        // #[cfg(feature = "serial_stdout")]
+                        // crate::serial_println!("cmd: {}", stdin.last().unwrap());
                     }
                     _ => {}
                 }
@@ -77,7 +77,7 @@ pub async fn run() {
                     fn help() {
                         print!("Available tests:\n");
                         print!("  async: test async core\n");
-                        #[cfg(feature = "mithril_allocator")]
+                        #[cfg(feature = "noalloc_allocator")]
                         print!("  alloc [bytes]: test new allocator\n");
                     }
                     if args.len() < 2 {
@@ -104,7 +104,7 @@ pub async fn run() {
                             }
                             async_fn().await
                         }
-                        #[cfg(feature = "mithril_allocator")]
+                        #[cfg(feature = "noalloc_allocator")]
                         "alloc" => {
                             if args.len() < 3 {
                                 print!("Usage: test alloc <bytes>\n");

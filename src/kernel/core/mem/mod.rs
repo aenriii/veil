@@ -10,18 +10,18 @@ use x86_64::{structures::paging::{Size4KiB, OffsetPageTable}, VirtAddr};
 use crate::{kernel::internal::{HEAP_START, HEAP_SIZE, HEAP_SIZE_AS_DEBUG_STR}, log_text_mode, log, prealloc_log_vga};
 #[cfg(feature = "bump_allocator")]
 
-pub(super) use self::alloc::Allocator;
+pub(crate) use self::alloc::Allocator;
 #[cfg(not(feature = "bump_allocator"))]
  // we need this available if we're using the mithril allocator
 pub(crate) use self::alloc::Allocator;
 #[cfg(feature = "bump_allocator")]
-pub(super) use frame_allocator::BootInfoFrameAllocator;
+pub(crate) use frame_allocator::BootInfoFrameAllocator;
 #[cfg(not(feature = "bump_allocator"))]
  // we need this available if we're using the mithril allocator
 pub(crate) use frame_allocator::BootInfoFrameAllocator;
 #[cfg(feature = "bump_allocator")]
 lazy_static::lazy_static! {
-    pub(super) static ref FrameAllocator: Mutex<BootInfoFrameAllocator<Size4KiB>> = Mutex::new(BootInfoFrameAllocator::new());
+    pub(crate) static ref FrameAllocator: Mutex<BootInfoFrameAllocator<Size4KiB>> = Mutex::new(BootInfoFrameAllocator::new());
 }
 #[cfg(not(feature = "bump_allocator"))]
 lazy_static::lazy_static! {
@@ -29,12 +29,12 @@ lazy_static::lazy_static! {
 }
 
 #[cfg(feature = "bump_allocator")]
-pub(super) static PageTable: Mutex<Option<OffsetPageTable>> = Mutex::new(None);
+pub(crate) static PageTable: Mutex<Option<OffsetPageTable>> = Mutex::new(None);
 #[cfg(feature = "mithril_allocator")]
 pub(crate) static PageTable: Mutex<Option<OffsetPageTable>> = Mutex::new(None);
 
 pub fn init(bi: &'static BootInfo) {
-    #[cfg(not(feature = "dra_allocator"))] {
+    #[cfg(feature = "bump_allocator")] {
         unsafe {
             let mut opt = OffsetPageTable::new(
                 {
@@ -62,5 +62,8 @@ pub fn init(bi: &'static BootInfo) {
     }
     #[cfg(feature = "dra_allocator")] unsafe {
         Allocator.lock().init(HEAP_START, HEAP_SIZE, bi)
-    }
+     }
+    #[cfg(feature = "noalloc_allocator")] unsafe {
+        Allocator.lock().init(bi)
+     }
 }

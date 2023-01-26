@@ -11,7 +11,7 @@ use crate::{
         },
         internal::tables, async_shell    },
     lib::{modules, veil_std::desync::Executor},
-    log, prealloc_log_vga, println, serial_println, std::desync::Task,
+    log, prealloc_log_vga, println, serial_println, std::desync::Task, modules::vm_core::qemu::serial_stdout::put_line,
 };
 
 pub fn main(boot_info: &'static BootInfo) -> ! {
@@ -31,6 +31,8 @@ pub fn main(boot_info: &'static BootInfo) -> ! {
             .lock()
             .clear_screen(color!(Black, White));
     }
+    #[cfg(feature = "serial_stdout")]
+    put_line("out of mem_init, trying allocation-based println.");
     println!("Welcome to Veil");
 
     #[cfg(feature = "async_core")] unsafe {

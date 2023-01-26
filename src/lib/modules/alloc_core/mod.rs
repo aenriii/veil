@@ -11,5 +11,5 @@ pub mod libregions;
 #[cfg(feature = "dra_allocator")]
 pub mod dynamic_region_alloc;
 
-// #[cfg(feature = "noalloc_allocator")]
+#[cfg(feature = "noalloc_allocator")]
 pub mod noalloc_alloc;

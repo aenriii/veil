@@ -23,7 +23,6 @@
 #![allow(incomplete_features)]
 // import alloc so we can implement memory allocation
 extern crate alloc;
-
 // there was some sort of thing we could do to define the entry point using a macro
 mod lib;
 mod kernel;

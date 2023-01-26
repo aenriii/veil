@@ -74,7 +74,7 @@ pub fn init() -> Result<(), MapToError<Size4KiB>> {
         }
         return Ok(())
     }
-    #[cfg(not(feature = "_prepage_heap"))] #[cfg(not(feature = "dra_allocator"))] unsafe {
+    #[cfg(not(feature = "_prepage_heap"))]  #[cfg(not(feature = "dra_allocator"))] #[cfg(not(feature = "noalloc_allocator"))] unsafe {
         serial_println!("[heap::init] prepage_heap feature not enabled");
         // assume heap takes in more parameters
         super::alloc::Allocator.lock().init(HEAP_START, HEAP_SIZE);
