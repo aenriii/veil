@@ -11,4 +11,6 @@
 ## How to run
 ### This assumes you have qemu-system-x86_64 installed and on your path.
 
+`cargo install bootimage`  
+`rustup component add llvm-tools-preview`  
 `cargo run`

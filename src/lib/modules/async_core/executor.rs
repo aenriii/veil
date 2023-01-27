@@ -22,6 +22,8 @@ pub type MainExecutor = super::primitive::PrimitiveExecutor;
 //     }
 // })));
 #[cfg(feature = "primitive_async_impl")]
-pub static mut Executor: Lazy<RefCell<super::primitive::PrimitiveExecutor>> = Lazy::new(|| RefCell::new(super::primitive::PrimitiveExecutor::new()));
+pub type UsedExecutor = super::primitive::PrimitiveExecutor;
 #[cfg(feature = "stable_async_impl")]
-pub static mut Executor: Lazy<RefCell<super::stable::StableExecutor>> = Lazy::new(|| RefCell::new(super::stable::StableExecutor::new()));
+pub type UsedExecutor = super::stable::StableExecutor;
+
+pub static mut Executor: Lazy<RefCell<UsedExecutor>> = Lazy::new(|| RefCell::new(UsedExecutor::new()));
