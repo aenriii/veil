@@ -16,23 +16,12 @@ alloc_core = ["bucket_allocator"]
 bucket_allocator = [] # Stable allocator that does not allocate on the heap
 bump_allocator = [] # Backup allocator that requires the heap to be prepaged.
 
-async_core = [
-    # requires
-    "alloc_core",
-
-    # async executor impl
-    "stable_async_impl",
-]
+async_core = ["alloc_core", "stable_async_impl"]
 primitive_async_impl = []
 stable_async_impl = ["desync_atomics", "feat_async_has_pub_tasks"]
-device_core = [
-    "vga_text_mode",
-    "serial_devices"
-]
+device_core = ["vga_text_mode", "serial_devices"]
 
-serial_devices = [
-    "ps2_keyboard",
-]
+serial_devices = ["ps2_keyboard"]
 vga_text_mode = []
 ps2_keyboard = ["ps2_keyboard_async"]
 ps2_keyboard_sync = []
@@ -48,6 +37,7 @@ pic8259 = "0.10.1"
 pc-keyboard = "0.6.1"
 linked_list_allocator = "0.10.2"
 lock_api = "0.4.9"
+hashbrown = "0.13.2"
 
 
 [dependencies.bootloader]

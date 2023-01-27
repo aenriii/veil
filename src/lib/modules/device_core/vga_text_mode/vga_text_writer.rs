@@ -26,8 +26,8 @@ impl VgaTextWriterT {
         }
     }
     fn shift_up(&mut self) {
-        #[cfg(feature = "serial_stdout")]
-        crate::serial_println!("shifting up");
+        // #[cfg(feature = "serial_stdout")]
+        // crate::serial_println!("shifting up");
         for ptr in VGA_HEIGHT..(VGA_WIDTH * VGA_HEIGHT-1) {
             unsafe {
                 *VGA_BUFFER.offset(ptr as isize * 2) = *VGA_BUFFER.offset((ptr * 2 + VGA_WIDTH * 2) as isize);

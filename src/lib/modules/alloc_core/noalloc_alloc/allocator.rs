@@ -43,12 +43,12 @@ impl BucketedAllocator {
 
 
         let addr_heap_start = VirtAddr::new(HEAP_START as u64);
-        put_line("Paging...");
+        // put_line("Paging...");
         for page in util::page_range_from::<Size4KiB>(addr_heap_start, addr_heap_start + MAX_HEAP_SIZE) {
             #[cfg(feature = "serial_stdout")]
             util::map_page(page, &mut frame_allocator, &mut page_tables);
         }
-        put_line("Paged");        
+        // put_line("Paged");        
     }
 }
 

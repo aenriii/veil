@@ -31,8 +31,8 @@ pub fn main(boot_info: &'static BootInfo) -> ! {
             .lock()
             .clear_screen(color!(Black, White));
     }
-    #[cfg(feature = "serial_stdout")]
-    put_line("out of mem_init, trying allocation-based println.");
+    // #[cfg(feature = "serial_stdout")]
+    // put_line("out of mem_init, trying allocation-based println.");
     println!("Welcome to Veil");
 
     #[cfg(feature = "async_core")] unsafe {
