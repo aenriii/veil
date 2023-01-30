@@ -4,7 +4,7 @@ use lazy_static::lazy_static;
 use spin::{Lazy, Mutex};
 use x86_64::VirtAddr;
 
-use crate::{print, modules::device_core::serial::ps2_keyboard::{ps2_keyboard_async::{SCANCODE_QUEUE, ScancodeStream}, KB}, kernel::core::bios::{ebda, self, rsdt::init}};
+use crate::{print, modules::device_core::serial::ps2_keyboard::{ps2_keyboard_async::{SCANCODE_QUEUE, ScancodeStream}, KB}, kernel::core::{bios::{ebda, self, rsdt::init}, mem::PHYSICAL_OFFSET}};
 
 const PS1: &str = "you@veil $> ";
 
@@ -110,6 +110,8 @@ pub async fn run() {
                         print!("Available tests:\n");
                         print!("  async: test async core\n");
                         print!("  bios: Run various BIOS init functions.\n");
+                        print!("  phys: Locate physical memory offset.\n");
+                        print!("  cal: calculate a simple math expression\n");
                         #[cfg(feature = "bucket_allocator")]
                         print!("  alloc [bytes]: test new allocator\n");
                     }
@@ -153,8 +155,39 @@ pub async fn run() {
                                 alloc::alloc::dealloc(p, l);
                             }
                         }
+                        "phys" => {
+                            print!("Phys Mem Offset: {:?}\n", PHYSICAL_OFFSET.lock());
+                        }
                         "bios" => unsafe {
                             init();
+                        }
+                        "cal" => {
+                            let mut res = 0;
+                            for (idx, arg) in args[2..].iter().enumerate() {
+                                match arg {
+                                    &"+" => {
+                                        res += args[idx + 3].parse::<i64>().unwrap();
+                                    }
+                                    &"-" => {
+                                        res -= args[idx + 3].parse::<i64>().unwrap();
+                                    }
+                                    &"*" => {
+                                        res *= args[idx + 3].parse::<i64>().unwrap();
+                                    }
+                                    &"/" => {
+                                        res /= args[idx + 3].parse::<i64>().unwrap();
+                                    }
+                                    _ => {
+                                        if idx == 0 {
+                                            res = arg.parse::<i64>().unwrap();
+                                        }
+                                    }
+                                }
+                            }
+                            print!("{}\n", res);
+                        }
+                        "panic" => {
+                            panic!("{}", args[2..].join(" "));
                         }
                         _ => {
                             print!("Unknown test: {}\n", args[1]);

@@ -1,6 +1,6 @@
 mod vga_text_writer;
 mod macros;
-pub use vga_text_writer::VgaTextWriter;
+pub use vga_text_writer::*;
 pub use vga_text_writer::Color::{self, *};
 use x86_64::instructions::port::Port;
 

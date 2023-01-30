@@ -21,10 +21,10 @@ pub fn init() {
             ACPI_TABLES.write().insert("RSDT", sdt_header);
             let rsdt = unsafe { &*(sdt_header as *const SdtHeader as *const Rsdt) };
             // crate::serial_println!("RSDT: {:?}", rsdt);
-
             for pointer in rsdt.pointers() {
-                println!("look! a {}!", unsafe {core::str::from_utf8_unchecked(&(&*pointer).signature)});
-                ACPI_TABLES.write().insert(unsafe {core::str::from_utf8_unchecked(&(&*pointer).signature)}, unsafe {(&*pointer)});
+                let sig = unsafe {core::str::from_utf8(&(&*pointer).signature)};
+                println!("look! a {:?}!", sig);
+                ACPI_TABLES.write().insert(sig.unwrap_or("ERR"), unsafe {(&*pointer)});
             }
             
         },
@@ -34,8 +34,9 @@ pub fn init() {
             // crate::serial_println!("XSDT: {:?}", xsdt);
 
             for pointer in xsdt.pointers() {
-                println!("look! a {}!", unsafe {core::str::from_utf8_unchecked(&(&*pointer).signature)});
-                ACPI_TABLES.write().insert(unsafe {core::str::from_utf8_unchecked(&(&*pointer).signature)}, unsafe {(&*pointer)});
+                let sig = unsafe {core::str::from_utf8(&(&*pointer).signature)};
+                println!("look! a {:?}!", sig);
+                ACPI_TABLES.write().insert(sig.unwrap_or("ERR"), unsafe {(&*pointer)});
             }
         },
     }

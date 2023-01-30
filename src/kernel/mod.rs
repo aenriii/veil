@@ -10,3 +10,5 @@ pub use main::main;
 pub(crate) use internal::HEAP_SIZE;
 pub(crate) use internal::HEAP_START;
 pub(crate) use internal::HEAP_SIZE_AS_DEBUG_STR;
+
+pub static mut PANIC: bool = false;

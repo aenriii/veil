@@ -1,3 +1,5 @@
+use core::fmt::Write;
+
 use spin::Mutex;
 
 
@@ -15,6 +17,17 @@ pub struct VgaTextWriterT {
     color_code: u8,
 }
 impl VgaTextWriterT {
+    pub unsafe fn new() -> Self {
+        // if not being called from panic, panic
+        if !crate::kernel::PANIC {
+            panic!("VgaTextWriterT::new() called outside of panic handler");
+        }
+        Self {
+            pos_x: 0,
+            pos_y: 0,
+            color_code: 0,
+        }
+    }
     fn bound(&mut self) {
         if self.pos_x >= VGA_WIDTH {
             self.pos_x = 0;
@@ -137,4 +150,11 @@ pub enum Color {
     LightMagenta = 0x0d,
     Yellow = 0x0e,
     White = 0x0f,
+}
+
+impl Write for VgaTextWriterT {
+    fn write_str(&mut self, s: &str) -> core::fmt::Result {
+        self.write_string(s);
+        Ok(())
+    }
 }

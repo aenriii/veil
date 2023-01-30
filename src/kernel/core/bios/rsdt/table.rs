@@ -104,9 +104,9 @@ impl Xsdt {
                  {addr_of!(self).add(core::mem::size_of::<SdtHeader>())
                      as *const [u64; 0] as *const u64
                      }.add(ptr as usize * 8)) };
-            pointers.push(pointer as *const SdtHeader); 
+            pointers.push(phys_to_virt_addr(pointer as *mut u8) as *const SdtHeader); 
             // #[cfg(feature = "serial_stdout")]
-            println!("pointer: {}", pointer);
+            println!("pointer: {}", phys_to_virt_addr(pointer as *mut u8) as u64);
         }}
         pointers
     }
