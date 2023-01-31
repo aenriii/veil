@@ -1,6 +1,6 @@
 use x86_64::structures::idt::InterruptStackFrame;
 
-use crate::{kernel::core::std_vecs::{STDIN, KEYIN}};
+use crate::{kernel::core::{std_vecs::{STDIN, KEYIN}, mem::HEAP_READY}};
 
 use super::{PIC_LOCATION, PICS};
 
@@ -36,11 +36,13 @@ pub extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: Interrupt
                 }
             }
             #[cfg(feature = "ps2_keyboard_async")]
-            {
-                use x86_64::instructions::port::Port;
-                let mut port = Port::new(0x60);
-                let scancode: u8 = unsafe { port.read() };
-                crate::modules::device_core::serial::ps2_keyboard::ps2_keyboard_async::add_scancode(scancode); 
+            unsafe {
+                if HEAP_READY {
+                    use x86_64::instructions::port::Port;
+                    let mut port = Port::new(0x60);
+                    let scancode: u8 = unsafe { port.read() };
+                    crate::modules::device_core::serial::ps2_keyboard::ps2_keyboard_async::add_scancode(scancode); 
+                } 
             }
         }
         unsafe {PICS.lock().notify_end_of_interrupt(InterruptIndex::Keyboard as u8);}

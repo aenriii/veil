@@ -1,7 +1,7 @@
 use x86_64::align_up;
 
-use crate::{err, kernel::core::{mem::util::phys_to_virt_addr, bios::ebda}, print};
-use super::{pointer::{Rdsp, Rdsp2}, table::SdtHeader, RSDP_SIGNATURE, rdsp_ptr};
+use crate::{err, kernel::core::{mem::util::phys_to_virt_addr, bios::{ebda, acpi::tables::SdtHeader}}, print};
+use super::{pointer::{Rdsp, Rdsp2}, RSDP_SIGNATURE, rdsp_ptr};
 
 /// Find RSDT by finding RSDP and then using the address in the RSDP to find the SDT Header
 /// 

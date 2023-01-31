@@ -19,9 +19,11 @@ pub static PHYSICAL_OFFSET: Mutex<Option<u64>> = Mutex::new(None);
 lazy_static::lazy_static! {
     pub(crate) static ref FrameAllocator: Mutex<BootInfoFrameAllocator<Size4KiB>> = Mutex::new(BootInfoFrameAllocator::new());
 }
+pub static mut HEAP_READY: bool = false;
 pub fn init(bi: &'static BootInfo) {
     *PHYSICAL_OFFSET.lock() = Some(bi.physical_memory_offset);
     #[cfg(feature = "bucket_allocator")] unsafe {
         Allocator.lock().init(bi)
      }
+    unsafe {HEAP_READY = true;}
 }

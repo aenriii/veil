@@ -2,8 +2,6 @@ use spin::Mutex;
 
 
 
-mod qemu_exit;
-
 pub static SUCCESSFUL_TESTS: Mutex<u64> = Mutex::new(0);
 
 #[cfg(test)]

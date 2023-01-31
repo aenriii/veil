@@ -4,7 +4,7 @@ use lazy_static::lazy_static;
 use spin::{Lazy, Mutex};
 use x86_64::VirtAddr;
 
-use crate::{print, modules::device_core::serial::ps2_keyboard::{ps2_keyboard_async::{SCANCODE_QUEUE, ScancodeStream}, KB}, kernel::core::{bios::{ebda, self, rsdt::init}, mem::PHYSICAL_OFFSET}};
+use crate::{print, modules::device_core::serial::ps2_keyboard::{ps2_keyboard_async::{SCANCODE_QUEUE, ScancodeStream}, KB}, kernel::core::{bios::{ebda, self, acpi}, mem::PHYSICAL_OFFSET}};
 
 const PS1: &str = "you@veil $> ";
 
@@ -109,7 +109,7 @@ pub async fn run() {
                     fn help() {
                         print!("Available tests:\n");
                         print!("  async: test async core\n");
-                        print!("  bios: Run various BIOS init functions.\n");
+                        print!("  acpi: Run various BIOS init functions.\n");
                         print!("  phys: Locate physical memory offset.\n");
                         print!("  cal: calculate a simple math expression\n");
                         #[cfg(feature = "bucket_allocator")]
@@ -158,8 +158,8 @@ pub async fn run() {
                         "phys" => {
                             print!("Phys Mem Offset: {:?}\n", PHYSICAL_OFFSET.lock());
                         }
-                        "bios" => unsafe {
-                            init();
+                        "acpi" => unsafe {
+                            acpi::init();
                         }
                         "cal" => {
                             let mut res = 0;
@@ -195,7 +195,11 @@ pub async fn run() {
                         }
                     }
                 }
-                "exit" => break,
+                "exit" => {
+                    #[cfg(feature = "vm_core")]
+                    crate::qemu_exit!(ok);
+                    break;
+                },
                 _ => {
                     print!("Command not found: {}\n", command);
                 }

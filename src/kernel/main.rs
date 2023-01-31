@@ -6,7 +6,7 @@ use crate::{
     color,
     kernel::{
         core::{
-            mem,
+            mem::{self, HEAP_READY},
             std_vecs::{KEYIN, STDIN},
         },
         internal::tables, async_shell    },
@@ -25,18 +25,18 @@ pub fn main(boot_info: &'static BootInfo) -> ! {
     }
     tables::init();
     mem::init(boot_info);
+    unsafe {HEAP_READY = true;}
     #[cfg(feature = "vga_text_mode")]
     {
         modules::device_core::vga_text_mode::VgaTextWriter
             .lock()
             .clear_screen(color!(Black, White));
     }
-    // #[cfg(feature = "serial_stdout")]
-    // put_line("out of mem_init, trying allocation-based println.");
-    println!("Welcome to Veil");
+    println!("Welcome to Veil v{}", env!("CARGO_PKG_VERSION"));
+    
 
     #[cfg(feature = "async_core")] unsafe {
-        log!("Loading core tasks and starting execution engine...");
+        // log!("Loading core tasks and starting execution engine...");
         modules::async_core::Executor.borrow_mut().spawn(Task::new(async_shell::run()));
         loop {
             modules::async_core::Executor.borrow_mut().run();
