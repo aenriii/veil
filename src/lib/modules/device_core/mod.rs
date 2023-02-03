@@ -6,3 +6,4 @@ pub mod serial;
 pub mod vga_text_mode;
 
 pub mod pci;
+pub mod cpu;

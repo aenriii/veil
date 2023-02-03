@@ -4,7 +4,7 @@ use lazy_static::lazy_static;
 use spin::{Lazy, Mutex};
 use x86_64::VirtAddr;
 
-use crate::{print, modules::device_core::serial::ps2_keyboard::{ps2_keyboard_async::{SCANCODE_QUEUE, ScancodeStream}, KB}, kernel::core::{bios::{ebda, self, acpi}, mem::PHYSICAL_OFFSET}};
+use crate::{print, modules::device_core::{serial::ps2_keyboard::{ps2_keyboard_async::{SCANCODE_QUEUE, ScancodeStream}, KB}, pci}, kernel::core::{bios::{ebda, self, acpi}, mem::PHYSICAL_OFFSET}};
 
 const PS1: &str = "you@veil $> ";
 
@@ -112,6 +112,7 @@ pub async fn run() {
                         print!("  acpi: Run various BIOS init functions.\n");
                         print!("  phys: Locate physical memory offset.\n");
                         print!("  cal: calculate a simple math expression\n");
+                        print!("  pci: gradual pci test\n");
                         #[cfg(feature = "bucket_allocator")]
                         print!("  alloc [bytes]: test new allocator\n");
                     }
@@ -188,6 +189,9 @@ pub async fn run() {
                         }
                         "panic" => {
                             panic!("{}", args[2..].join(" "));
+                        }
+                        "pci" => {
+                            pci::init();
                         }
                         _ => {
                             print!("Unknown test: {}\n", args[1]);
