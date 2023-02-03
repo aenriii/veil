@@ -14,15 +14,14 @@ use crate::serial_log;
 pub use self::acpi_table::{Rsdt, Xsdt};
 
 pub unsafe fn read_table_at(pointer: *const SdtHeader) -> AcpiTable {
-    
-
     return match from_utf8(&(&*pointer).signature) {
         Ok("RSDT") => return AcpiTable::Rsdt(pointer as *const Rsdt),
         Ok("XSDT") => return AcpiTable::Xsdt(pointer as *const Xsdt),
-
+        Ok("FACP") => return AcpiTable::Fadt(pointer as *const Fadt),
+        Ok("HPET") => return AcpiTable::Hpet(pointer as *const Hpet),
+        Ok("APIC") => return AcpiTable::Madt(pointer as *const Madt),
         Ok(_) => {
-            serial_log!("Unknown ACPI table: {}", from_utf8(&(&*pointer).signature).unwrap());
-
+            // serial_log!("Unknown ACPI table: {}", sig);
             return AcpiTable::Unknown(pointer);
         }
         Err(_) => {

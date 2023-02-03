@@ -20,7 +20,6 @@ pub fn find_rsdt() -> Option<*mut SdtHeader> { return unsafe {
             return Some(phys_to_virt_addr(rsdp.rsdt_address as *mut u8) as *mut SdtHeader)
         } else {
             return Some(phys_to_virt_addr(unsafe {
-                // convert rsdp to Rdsp2 by casting
                 &*(rsdp as *const Rdsp as *const Rdsp2)
             }.xsdt_address as *mut u8) as *mut SdtHeader)
         }
@@ -31,28 +30,21 @@ pub fn find_rsdt() -> Option<*mut SdtHeader> { return unsafe {
 }}
 pub unsafe fn find_rsdp() -> Option<*mut Rdsp> {
     if let Some(p) = rdsp_ptr {
-        // #[cfg(feature = "serial_stdout")]
-        // crate::serial_println!("cache hit!");
         return Some(p)
     }
     
-    // print!("Scanning EBDA for RSDP... ");
     match scan_ebda() {
         Some(rsdp) => {
-            // print!("found at {:p}\n", rsdp);
             rdsp_ptr = Some(rsdp);
             Some(rsdp)
         },
         None => {
-            // print!("\nnot found, scanning BIOS... ");
             match scan_bios() {
                 Some(rsdp) => {
-                    // print!("found at {:p}\n", rsdp);
                     rdsp_ptr = Some(rsdp);
                     Some(rsdp)
                 },
-                None => {
-                    // print!("not found\n");
+                None => {   
                     None
                 },
             }
