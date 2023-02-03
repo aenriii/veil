@@ -2,15 +2,16 @@
 mod acpi_table;
 mod header;
 mod debug;
-pub mod rsdt;
+mod rsdt;
 use core::str::from_utf8;
 
 pub use acpi_table::AcpiTable;
 pub use header::SdtHeader;
-
+pub use acpi_table::*;
+pub use rsdt::find_rsdt;
 use crate::serial_log;
 
-use self::acpi_table::{Rsdt, Xsdt};
+pub use self::acpi_table::{Rsdt, Xsdt};
 
 pub unsafe fn read_table_at(pointer: *const SdtHeader) -> AcpiTable {
     

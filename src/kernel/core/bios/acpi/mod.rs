@@ -1,18 +1,14 @@
 pub mod tables;
 
-use tables::rsdt;
-use tables::AcpiTable;
 
+use tables::*;
 use crate::kernel::core::bios::acpi;
 use crate::serial_log;
 pub fn init() { unsafe {
-    match tables::read_table_at(rsdt::find_rsdt().expect("No RSDT found")) {
+    match tables::read_table_at(find_rsdt().expect("No RSDT found")) {
         AcpiTable::Rsdt(mut rsdt) => {
             serial_log!("Found RSDT at {:#x}", rsdt as usize);
-            if (*rsdt).header.revision != 0 {
-                serial_log!("Claims to be XSDT!");
-                rsdt = rsdt as *const
-            }
+
 
 
             serial_log!("Looking up pointers...");

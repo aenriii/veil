@@ -20,7 +20,7 @@ mod rsdt {
     use crate::{println, kernel::core::{mem::util::phys_to_virt_addr, bios::acpi::tables::SdtHeader}, serial_log};
 
 
-    #[repr(C, packed)]
+    #[repr(packed)]
     #[derive(Copy, Clone)]
     pub struct Rsdt {
         pub header: SdtHeader,
@@ -28,19 +28,16 @@ mod rsdt {
     }
 
     impl Rsdt {
-        pub fn pointers(&self) -> Vec<*const SdtHeader> {
+        pub fn pointers(&self) -> Vec<*const SdtHeader> { unsafe {
             let mut pointers: Vec<*const SdtHeader> = Vec::new();
-            for ptr in 0..(self.header.length - core::mem::size_of::<SdtHeader>() as u32) / 4 { unsafe {
-                
-                // find pointer in memory
-                let pointer = unsafe { core::ptr::read_unaligned( {addr_of!(self).add(core::mem::size_of::<SdtHeader>()) as *const [u32; 0] as *const u32 }.add(ptr as usize * 4)) };
-                serial_log!("Decoding pointers, found (offset? addr?) (hex:) {:#x}", pointer);
-                pointers.push((&*self as *const Rsdt).add(pointer as usize) as *const SdtHeader); 
-                // #[cfg(feature = "serial_stdout")]
-                
-            }}
-            pointers
-        }
+            let header = &self.header;
+            let ptr_count = header.data_len() / 4;
+            for ptr_slice in header.data().chunks(4) {
+                let ptr = unsafe { core::ptr::read_unaligned(ptr_slice.as_ptr() as *const u32) };
+                pointers.push(phys_to_virt_addr(ptr as *mut u8) as *const SdtHeader);
+            }
+            return pointers;
+        }}
     }
 }
 

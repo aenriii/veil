@@ -1,4 +1,4 @@
-#[repr(C, packed)]
+#[repr(packed)]
 #[derive(Copy, Clone)]
 pub struct SdtHeader {
     pub signature: [u8; 4],
@@ -37,5 +37,27 @@ impl core::fmt::Debug for SdtHeader {
             .field("creator_id", &creator_id)
             .field("creator_revision", &creator_revision)
             .finish()
+    }
+}
+
+impl SdtHeader {
+    pub fn is_valid(&self) -> bool {
+        let mut sum = 0;
+        for i in 0..self.length {
+            unsafe {
+                sum += *(&*self as *const SdtHeader as *const u8).add(i as usize);
+            }
+        }
+        sum == 0
+    }
+    pub fn data_pointer(&self) -> usize {
+        self as *const _ as usize + core::mem::size_of::<SdtHeader>()
+    }
+    pub fn data_len(&self) -> usize {
+        self.length as usize - core::mem::size_of::<SdtHeader>()
+    }
+
+    pub fn data(&self) -> &[u8] {
+        unsafe { core::slice::from_raw_parts(self.data_pointer() as *const u8, self.data_len()) }
     }
 }
