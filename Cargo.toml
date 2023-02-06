@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2018"
 
 [features]
-default = ["vm_core", "alloc_core", "device_core", "async_core"]
+default = ["vm_core", "alloc_core", "device_core", "async_core", "graphics_core"]
 
 vm_core = ["qemu_features"]
 
@@ -30,6 +30,8 @@ ps2_keyboard_async = ["async_core", "alloc_core"] # requires allocator and async
 desync_atomics = []
 
 feat_async_has_pub_tasks = []
+
+graphics_core = []
 [dependencies]
 uart_16550 = "0.2.0"
 pic8259 = "0.10.1"

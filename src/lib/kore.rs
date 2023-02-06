@@ -1,4 +1,4 @@
-use crate::{error_text_mode, modules::device_core::vga_text_mode::{VgaTextWriter, VgaTextWriterT}, color, kernel::PANIC};
+use crate::{error_text_mode, modules::device_core::vga_text_mode::{VgaTextWriter, VgaTextWriterT}, color, kernel::PANIC, serial_log};
 
 #[panic_handler]
 pub fn panic(info: &core::panic::PanicInfo) -> ! {
@@ -45,6 +45,15 @@ pub fn panic(info: &core::panic::PanicInfo) -> ! {
     if let Some(message) = info.message() {
         error_text_mode!("Message: {}", message);
     }
+    serial_log!("PANIC!");
+    if let Some(message) = info.message() {
+        serial_log!("Message: {}", message);
+    }
+    if let Some(location) = info.location() {
+        error_text_mode!("Location: {}", location);
+        serial_log!("Location: {}", location);
+    }
+
     loop {}
 }
 

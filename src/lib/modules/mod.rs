@@ -12,3 +12,6 @@ pub mod device_core;
 
 #[cfg(feature = "vm_core")]
 pub mod vm_core;
+
+#[cfg(feature = "graphics_core")]
+pub mod graphics_core;

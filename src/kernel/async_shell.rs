@@ -4,7 +4,7 @@ use lazy_static::lazy_static;
 use spin::{Lazy, Mutex};
 use x86_64::VirtAddr;
 
-use crate::{print, modules::device_core::{serial::ps2_keyboard::{ps2_keyboard_async::{SCANCODE_QUEUE, ScancodeStream}, KB}, pci}, kernel::core::{bios::{ebda, self, acpi}, mem::PHYSICAL_OFFSET}};
+use crate::{print, modules::{device_core::{serial::ps2_keyboard::{ps2_keyboard_async::{SCANCODE_QUEUE, ScancodeStream}, KB}, pci}, graphics_core}, kernel::core::{bios::{ebda, self, acpi}, mem::PHYSICAL_OFFSET}};
 
 const PS1: &str = "you@veil $> ";
 
@@ -193,6 +193,7 @@ pub async fn run() {
                         "pci" => {
                             pci::init();
                         }
+
                         _ => {
                             print!("Unknown test: {}\n", args[1]);
                             help();
