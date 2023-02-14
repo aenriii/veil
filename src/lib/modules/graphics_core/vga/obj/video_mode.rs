@@ -1,0 +1,9 @@
+#[derive(Debug, Clone, Copy)]
+pub enum VideoMode {
+    Mode40x25,
+    Mode40x50,
+    Mode80x25,
+    Mode320x200x256,
+    Mode320x240x256,
+    Mode640x480,
+}
